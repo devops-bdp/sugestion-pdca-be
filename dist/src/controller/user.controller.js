@@ -14,7 +14,6 @@ const pool = new pg_1.Pool({
 const adapter = new adapter_pg_1.PrismaPg(pool);
 const prisma = new client_1.PrismaClient({ adapter });
 class UserController {
-    // Get current user's profile (from JWT token)
     async getUserProfile(req, res) {
         try {
             const userId = req.user?.id;
@@ -59,13 +58,11 @@ class UserController {
             });
         }
     }
-    // Get all users (Admin only)
     async getAllUserProfile(req, res) {
         try {
             const { page = 1, limit = 10, search, departement, role } = req.query;
             const skip = (Number(page) - 1) * Number(limit);
             const take = Number(limit);
-            // Build where clause for filtering
             const where = {};
             if (search) {
                 where.OR = [
@@ -79,9 +76,7 @@ class UserController {
             if (role) {
                 where.role = role;
             }
-            // Get total count for pagination
             const totalUsers = await prisma.user.count({ where });
-            // Get users with pagination
             const users = await prisma.user.findMany({
                 where,
                 select: {
@@ -122,14 +117,12 @@ class UserController {
             });
         }
     }
-    // Get all Group Leaders
     async getGroupLeaderProfile(req, res) {
         try {
             const { departement } = req.query;
             const where = {
                 role: "Group_Leader",
             };
-            // Filter by department if provided
             if (departement) {
                 where.departement = departement;
             }
@@ -166,7 +159,6 @@ class UserController {
             });
         }
     }
-    // Get all Staff and Non-Staff users
     async getStaffandNonStaffProfile(req, res) {
         try {
             const { departement, posision } = req.query;
@@ -175,11 +167,9 @@ class UserController {
                     in: ["Staff", "Non_Staff"],
                 },
             };
-            // Filter by department if provided
             if (departement) {
                 where.departement = departement;
             }
-            // Filter by position if provided
             if (posision) {
                 where.posision = posision;
             }
@@ -198,14 +188,13 @@ class UserController {
                 },
                 orderBy: [
                     {
-                        role: "asc", // Non_Staff first, then Staff
+                        role: "asc",
                     },
                     {
                         departement: "asc",
                     },
                 ],
             });
-            // Group by role for better organization
             const grouped = {
                 Non_Staff: staffUsers.filter((user) => user.role === "Non_Staff"),
                 Staff: staffUsers.filter((user) => user.role === "Staff"),
@@ -231,7 +220,6 @@ class UserController {
             });
         }
     }
-    // Bonus: Get user by ID (for admins to view specific user details)
     async getUserById(req, res) {
         try {
             const { id } = req.params;
@@ -270,12 +258,10 @@ class UserController {
             });
         }
     }
-    // Bonus: Update user profile
     async updateUserProfile(req, res) {
         try {
             const { id } = req.params;
             const { firstName, lastName, role, departement, posision } = req.body;
-            // Check if user exists
             const existingUser = await prisma.user.findUnique({
                 where: { id },
             });
@@ -285,7 +271,6 @@ class UserController {
                     message: "User not found",
                 });
             }
-            // Update user
             const updatedUser = await prisma.user.update({
                 where: { id },
                 data: {
@@ -321,11 +306,9 @@ class UserController {
             });
         }
     }
-    // Bonus: Delete user
     async deleteUser(req, res) {
         try {
             const { id } = req.params;
-            // Check if user exists
             const existingUser = await prisma.user.findUnique({
                 where: { id },
             });
@@ -335,14 +318,12 @@ class UserController {
                     message: "User not found",
                 });
             }
-            // Prevent deleting yourself
             if (req.user?.id === id) {
                 return res.status(400).json({
                     success: false,
                     message: "You cannot delete your own account",
                 });
             }
-            // Delete user
             await prisma.user.delete({
                 where: { id },
             });
@@ -360,7 +341,6 @@ class UserController {
             });
         }
     }
-    // Update current user's own profile (password only)
     async updateMyProfile(req, res) {
         try {
             const userId = req.user?.id;
@@ -371,21 +351,18 @@ class UserController {
                 });
             }
             const { currentPassword, newPassword } = req.body;
-            // Validation
             if (!currentPassword || !newPassword) {
                 return res.status(400).json({
                     success: false,
                     message: "Current password and new password are required",
                 });
             }
-            // Check if new password is strong enough (optional)
             if (newPassword.length < 6) {
                 return res.status(400).json({
                     success: false,
                     message: "New password must be at least 6 characters long",
                 });
             }
-            // Get user from database
             const user = await prisma.user.findUnique({
                 where: { id: userId },
             });
@@ -395,7 +372,6 @@ class UserController {
                     message: "User not found",
                 });
             }
-            // Verify current password
             const isPasswordValid = await (0, bcrypt_1.compare)(currentPassword, user.password);
             if (!isPasswordValid) {
                 return res.status(401).json({
@@ -403,10 +379,8 @@ class UserController {
                     message: "Current password is incorrect",
                 });
             }
-            // Hash new password
             const salt = await (0, bcrypt_1.genSalt)(10);
             const hashedPassword = await (0, bcrypt_1.hash)(newPassword, salt);
-            // Update password
             const updatedUser = await prisma.user.update({
                 where: { id: userId },
                 data: {

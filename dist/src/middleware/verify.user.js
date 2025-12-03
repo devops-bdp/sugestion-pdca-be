@@ -15,7 +15,6 @@ const adapter = new adapter_pg_1.PrismaPg(pool);
 const prisma = new client_1.PrismaClient({ adapter });
 const verifyUser = async (req, res, next) => {
     try {
-        // Get token from Authorization header
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             return res.status(401).json({
@@ -23,24 +22,20 @@ const verifyUser = async (req, res, next) => {
                 message: "No token provided",
             });
         }
-        // Check if Bearer token format
         if (!authHeader.startsWith("Bearer ")) {
             return res.status(401).json({
                 success: false,
                 message: "Invalid token format. Use 'Bearer <token>'",
             });
         }
-        // Extract token
-        const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+        const token = authHeader.substring(7);
         if (!token) {
             return res.status(401).json({
                 success: false,
                 message: "Token is missing",
             });
         }
-        // Verify token
         const decoded = (0, jsonwebtoken_1.verify)(token, process.env.JWT_SECRET);
-        // Optional: Check if user still exists in database
         const user = await prisma.user.findUnique({
             where: { id: decoded.id },
             select: {
@@ -59,7 +54,6 @@ const verifyUser = async (req, res, next) => {
                 message: "User not found",
             });
         }
-        // Attach user info to request
         req.user = {
             id: decoded.id,
             nrp: decoded.nrp,
@@ -92,7 +86,6 @@ const verifyUser = async (req, res, next) => {
     }
 };
 exports.verifyUser = verifyUser;
-// Middleware to check specific roles
 const verifyRole = (...allowedRoles) => {
     return (req, res, next) => {
         if (!req.user) {
@@ -111,7 +104,6 @@ const verifyRole = (...allowedRoles) => {
     };
 };
 exports.verifyRole = verifyRole;
-// Middleware to check specific departments
 const verifyDepartment = (...allowedDepartments) => {
     return (req, res, next) => {
         if (!req.user) {

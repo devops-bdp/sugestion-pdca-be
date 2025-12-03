@@ -1,0 +1,45 @@
+export declare const Role: {
+    readonly Non_Staff: "Non_Staff";
+    readonly Staff: "Staff";
+    readonly Group_Leader: "Group_Leader";
+    readonly Supervisor: "Supervisor";
+    readonly Dept_Head: "Dept_Head";
+    readonly Project_Manager: "Project_Manager";
+    readonly Super_Admin: "Super_Admin";
+};
+export type Role = (typeof Role)[keyof typeof Role];
+export declare const Department: {
+    readonly IT: "IT";
+    readonly HRGA: "HRGA";
+    readonly PLANT: "PLANT";
+    readonly HSE: "HSE";
+    readonly TC: "TC";
+    readonly PRODUKSI: "PRODUKSI";
+    readonly LOGISTIK: "LOGISTIK";
+};
+export type Department = (typeof Department)[keyof typeof Department];
+export declare const Posision: {
+    readonly MEKANIK: "MEKANIK";
+    readonly TYREMAN: "TYREMAN";
+    readonly WELDER: "WELDER";
+    readonly OPERATOR_DT: "OPERATOR_DT";
+    readonly OPERATOR_FT: "OPERATOR_FT";
+    readonly OPERATOR_CT: "OPERATOR_CT";
+    readonly DRIVER_LV: "DRIVER_LV";
+    readonly DRIVER_SARANA: "DRIVER_SARANA";
+    readonly GL_PRODUKSI: "GL_PRODUKSI";
+    readonly GL_LOGISTIK: "GL_LOGISTIK";
+    readonly GL_PLANT: "GL_PLANT";
+    readonly GL_HSE: "GL_HSE";
+    readonly GL_HRGA: "GL_HRGA";
+    readonly PDCA_OFFICER: "PDCA_OFFICER";
+    readonly HRGA_OFFICER: "HRGA_OFFICER";
+    readonly PLANNER: "PLANNER";
+    readonly SPV_PLANT: "SPV_PLANT";
+    readonly SPV_PRODUKSI: "SPV_PRODUKSI";
+    readonly SPV_LOGISTIK: "SPV_LOGISTIK";
+    readonly SPV_HSE: "SPV_HSE";
+    readonly CCR: "CCR";
+    readonly MOCO: "MOCO";
+};
+export type Posision = (typeof Posision)[keyof typeof Posision];
