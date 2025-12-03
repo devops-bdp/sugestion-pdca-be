@@ -31,7 +31,6 @@ app.use((req, res) => {
         message: "Route not found",
         path: req.path
     });
-
 });
 const PORT = process.env.PORT || 8000;
 if (process.env.NODE_ENV !== "production") {
