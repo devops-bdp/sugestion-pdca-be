@@ -1,46 +1,50 @@
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
-dotenv.config();
-import express from "express";
 import cors from "cors";
-import "dotenv/config";
-import { AuthRouter } from "./router/auth.router"
+import { AuthRouter } from "./router/auth.router";
 import { UserRouter } from "./router/user.router";
 
+dotenv.config();
 
-const PORT: number = 8000;
-const base_url_fe = process.env.BASE_URL_FE; // Frontend URL from environment
-
-// Initialize Express app
 const app = express();
 
-// Middlewares
+// Middleware
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  cors({
-    origin: base_url_fe, // Allow requests from the frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"], // Allow Authorization header
-    credentials: true, // Allow credentials (cookies, headers, etc.)
-  })
-);
+// Health check
+app.get("/", (req: Request, res: Response) => {
+  res.json({ 
+    message: "Suggestion System API is running",
+    status: "healthy",
+    timestamp: new Date().toISOString()
+  });
+});
 
-
-// Initialize Routers
+// Routes
 const authRouter = new AuthRouter();
 const userRouter = new UserRouter();
 
+app.use("/api/auth", authRouter.getRouter());
+app.use("/api/users", userRouter.getRouter());
 
-// Register Routes
-app.use("/api/auth", authRouter.getRouter());  // Authentication routes
-app.use("/api/users", userRouter.getRouter()); // User management routes
-
-// Base route
-app.get("/api", (req, res) => {
-  res.send("Welcome to the API!");
+// 404 handler
+app.use((req: Request, res: Response) => {
+  res.status(404).json({ 
+    success: false,
+    message: "Route not found",
+    path: req.path 
+  });
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on -> http://localhost:${PORT}/api`);
-});
+// Local development
+const PORT = process.env.PORT || 8000;
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+// CRITICAL: Export for Vercel
+export default app;
