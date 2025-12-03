@@ -20,6 +20,7 @@ app.get("/", (req, res) => {
         timestamp: new Date().toISOString()
     });
 });
+
 const authRouter = new auth_router_1.AuthRouter();
 const userRouter = new user_router_1.UserRouter();
 app.use("/api/auth", authRouter.getRouter());

@@ -17,6 +17,7 @@ export declare const Department: {
     readonly PRODUKSI: "PRODUKSI";
     readonly LOGISTIK: "LOGISTIK";
     readonly ALL_DEPT: "ALL_DEPT";
+
 };
 export type Department = (typeof Department)[keyof typeof Department];
 export declare const Posision: {
