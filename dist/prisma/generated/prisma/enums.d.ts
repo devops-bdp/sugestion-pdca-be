@@ -16,6 +16,7 @@ export declare const Department: {
     readonly TC: "TC";
     readonly PRODUKSI: "PRODUKSI";
     readonly LOGISTIK: "LOGISTIK";
+    readonly ALL_DEPT: "ALL_DEPT";
 };
 export type Department = (typeof Department)[keyof typeof Department];
 export declare const Posision: {
@@ -39,7 +40,17 @@ export declare const Posision: {
     readonly SPV_PRODUKSI: "SPV_PRODUKSI";
     readonly SPV_LOGISTIK: "SPV_LOGISTIK";
     readonly SPV_HSE: "SPV_HSE";
+    readonly SPV_HRGA: "SPV_HRGA";
+    readonly DEPT_HEAD_PLANT: "DEPT_HEAD_PLANT";
+    readonly DEPT_HEAD_PRODUKSI: "DEPT_HEAD_PRODUKSI";
+    readonly DEPT_HEAD_LOGISTIK: "DEPT_HEAD_LOGISTIK";
+    readonly DEPT_HEAD_HSE: "DEPT_HEAD_HSE";
+    readonly DEPT_HEAD_HRGA: "DEPT_HEAD_HRGA";
+    readonly IT_OFFICER: "IT_OFFICER";
+    readonly IT_MANAGER: "IT_MANAGER";
+    readonly PROJECT_MANAGER: "PROJECT_MANAGER";
     readonly CCR: "CCR";
     readonly MOCO: "MOCO";
+    readonly MANAGEMENT_SITE: "MANAGEMENT_SITE";
 };
 export type Posision = (typeof Posision)[keyof typeof Posision];
