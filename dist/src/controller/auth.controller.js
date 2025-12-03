@@ -11,7 +11,6 @@ const adapter_pg_1 = require("@prisma/adapter-pg");
 const bcrypt_1 = require("bcrypt");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const pg_1 = require("pg");
-// Create a pool with proper configuration
 const pool = new pg_1.Pool({
     connectionString: process.env.DATABASE_URL,
     max: 10,
@@ -20,7 +19,6 @@ const pool = new pg_1.Pool({
 });
 const adapter = new adapter_pg_1.PrismaPg(pool);
 const prisma = new client_1.PrismaClient({ adapter });
-// Add BigInt serialization support
 BigInt.prototype.toJSON = function () {
     return this.toString();
 };
@@ -28,7 +26,6 @@ class AuthController {
     async register(req, res) {
         try {
             const { firstName, lastName, nrp, role, departement, posision, password, } = req.body;
-            // Validation
             if (!firstName ||
                 !lastName ||
                 !nrp ||
