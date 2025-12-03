@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  firstName      String
+  lastName       String
+  nrp            BigInt
+  role            Role
+  departement     Department
+  posision        Posision
+  password        String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  Non_Staff
+  Staff
+  Group_Leader
+  Supervisor
+  Dept_Head
+  Project_Manager
+  Super_Admin
+}
+
+enum Department {
+  IT
+  HRGA
+  PLANT
+  HSE
+  TC
+  PRODUKSI
+  LOGISTIK
+}
+
+enum Posision{
+  MEKANIK
+  TYREMAN
+  WELDER
+  OPERATOR_DT
+  OPERATOR_FT
+  OPERATOR_CT
+  DRIVER_LV
+  DRIVER_SARANA
+  GL_PRODUKSI
+  GL_LOGISTIK
+  GL_PLANT
+  GL_HSE
+  GL_HRGA
+  PDCA_OFFICER
+  HRGA_OFFICER
+  PLANNER
+  SPV_PLANT
+  SPV_PRODUKSI
+  SPV_LOGISTIK
+  SPV_HSE
+  CCR
+  MOCO
+}
