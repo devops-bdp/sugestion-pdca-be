@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String          @id @default(cuid())
+  firstName       String
+  lastName        String
+  nrp             BigInt          @unique
+  role            Role
+  permissionLevel PermissionLevel @default(SUBMITTER)
+  department      Department      @default(HRGA)
+  position        Position        @default(HRGA_OFFICER)
+  password        String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  suggestions Suggestion[]
+}
+
+enum Role {
+  Non_Staff
+  Staff
+  Group_Leader
+  Supervisor
+  Dept_Head
+  Project_Manager
+  Super_Admin
+}
+
+enum Department {
+  IT
+  HRGA
+  PLANT
+  HSE
+  TC
+  PRODUKSI
+  LOGISTIK
+  ALL_DEPT
+}
+
+enum PermissionLevel {
+  SUBMITTER
+  APPROVAL_ONLY
+  SCORING_ONLY
+  APPROVAL_SCORING
+  FULL_ACCESS
+}
+
+enum Position {
+  MEKANIK
+  TYREMAN
+  WELDER
+  OPERATOR_DT
+  OPERATOR_FT
+  OPERATOR_CT
+  DRIVER_LV
+  DRIVER_SARANA
+  GL_PRODUKSI
+  GL_LOGISTIK
+  GL_PLANT
+  GL_HSE
+  GL_HRGA
+  PDCA_OFFICER
+  HRGA_OFFICER
+  PLANNER
+  SPV_PLANT
+  SPV_PRODUKSI
+  SPV_LOGISTIK
+  SPV_HSE
+  SPV_HRGA
+  DEPT_HEAD_PLANT
+  DEPT_HEAD_PRODUKSI
+  DEPT_HEAD_LOGISTIK
+  DEPT_HEAD_HSE
+  DEPT_HEAD_HRGA
+  IT_OFFICER
+  IT_MANAGER
+  PROJECT_MANAGER
+  CCR
+  MOCO
+  MANAGEMENT_SITE
+}
+
+enum KriteriaSS {
+  QUALITY
+  COST
+  DELIVERY
+  SAFETY
+  MORALE
+  PRODUCTIVITY
+}
+
+enum SifatPerbaikan {
+  MENCIPTAKAN
+  MENINGKATKAN
+  MENCONTOH
+}
+
+enum StatusIde {
+  DIAJUKAN
+  APPROVE
+  DINILAI
+}
+
+model Suggestion {
+  id                  String         @id @default(cuid())
+  judulIde            String
+  masalahYangDihadapi String
+  uraianIde           String
+  ideProsesPerbaikan  String
+  hasilUraianProses   String
+  evaluasiIde         String
+  komentarAtasan      String?
+  fotoSebelum         String?
+  fotoSesudah         String?
+  kriteriaSS          KriteriaSS
+  sifatPerbaikan      SifatPerbaikan
+  statusIde           StatusIde      @default(DIAJUKAN)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  userId              String
+
+  user      User                @relation(fields: [userId], references: [id])
+  history   SuggestionHistory[]
+  penilaian FormPenilaian[]
+}
+
+model SuggestionHistory {
+  id           String    @id @default(cuid())
+  suggestionId String
+  statusIde    StatusIde
+  changedAt    DateTime  @default(now())
+
+  suggestion Suggestion @relation(fields: [suggestionId], references: [id], onDelete: Cascade)
+}
+
+model FormPenilaian {
+  id                String   @id @default(cuid())
+  suggestionId      String
+  penilaianKriteria String
+  skorKriteria      Int
+  komentarPenilaian String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  suggestion Suggestion @relation(fields: [suggestionId], references: [id], onDelete: Cascade)
+}

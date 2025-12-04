@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "./generated/prisma"
 }
 
@@ -8,16 +8,19 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  firstName      String
-  lastName       String
-  nrp            BigInt
+  id              String         @id @default(cuid())
+  firstName       String
+  lastName        String
+  nrp             BigInt         @unique
   role            Role
-  departement     Department
-  posision        Posision
+  permissionLevel PermissionLevel @default(SUBMITTER)
+  department      Department @default(HRGA)
+  position        Position @default(HRGA_OFFICER)
   password        String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  suggestions     Suggestion[]
 }
 
 enum Role {
@@ -41,7 +44,15 @@ enum Department {
   ALL_DEPT
 }
 
-enum Posision{
+enum PermissionLevel {
+  SUBMITTER
+  APPROVAL_ONLY
+  SCORING_ONLY
+  APPROVAL_SCORING
+  FULL_ACCESS
+}
+
+enum Position {
   MEKANIK
   TYREMAN
   WELDER
@@ -74,4 +85,69 @@ enum Posision{
   CCR
   MOCO
   MANAGEMENT_SITE
+}
+
+enum KriteriaSS {
+  QUALITY
+  COST
+  DELIVERY
+  SAFETY
+  MORALE
+  PRODUCTIVITY
+}
+
+enum SifatPerbaikan {
+  MENCIPTAKAN
+  MENINGKATKAN
+  MENCONTOH
+}
+
+enum StatusIde {
+  DIAJUKAN 
+  APPROVE
+  DINILAI
+}
+
+model Suggestion {
+  id                    String            @id @default(cuid())
+  judulIde              String
+  masalahYangDihadapi   String
+  uraianIde             String
+  ideProsesPerbaikan    String
+  hasilUraianProses     String
+  evaluasiIde           String
+  komentarAtasan        String?
+  fotoSebelum           String?
+  fotoSesudah           String?
+  kriteriaSS            KriteriaSS
+  sifatPerbaikan        SifatPerbaikan
+  statusIde             StatusIde         @default(DIAJUKAN)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  userId                String
+  
+  user                  User              @relation(fields: [userId], references: [id])
+  history               SuggestionHistory[]
+  penilaian             FormPenilaian[]
+}
+
+model SuggestionHistory { 
+  id            String      @id @default(cuid())
+  suggestionId  String
+  statusIde     StatusIde
+  changedAt     DateTime    @default(now())
+  
+  suggestion    Suggestion  @relation(fields: [suggestionId], references: [id], onDelete: Cascade)
+}
+
+model FormPenilaian {
+  id                  String      @id @default(cuid())
+  suggestionId        String
+  penilaianKriteria   String
+  skorKriteria        Int
+  komentarPenilaian   String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  suggestion          Suggestion  @relation(fields: [suggestionId], references: [id], onDelete: Cascade)
 }
