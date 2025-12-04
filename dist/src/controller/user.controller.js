@@ -31,8 +31,8 @@ class UserController {
                     lastName: true,
                     nrp: true,
                     role: true,
-                    departement: true,
-                    posision: true,
+                    department: true,
+                    position: true,
                     createdAt: true,
                     updatedAt: true,
                 },
@@ -60,7 +60,7 @@ class UserController {
     }
     async getAllUserProfile(req, res) {
         try {
-            const { page = 1, limit = 10, search, departement, role } = req.query;
+            const { page = 1, limit = 10, search, department, role } = req.query;
             const skip = (Number(page) - 1) * Number(limit);
             const take = Number(limit);
             const where = {};
@@ -70,8 +70,8 @@ class UserController {
                     { lastName: { contains: search, mode: "insensitive" } },
                 ];
             }
-            if (departement) {
-                where.departement = departement;
+            if (department) {
+                where.department = department;
             }
             if (role) {
                 where.role = role;
@@ -85,8 +85,8 @@ class UserController {
                     lastName: true,
                     nrp: true,
                     role: true,
-                    departement: true,
-                    posision: true,
+                    department: true,
+                    position: true,
                     createdAt: true,
                     updatedAt: true,
                 },
@@ -119,12 +119,12 @@ class UserController {
     }
     async getGroupLeaderProfile(req, res) {
         try {
-            const { departement } = req.query;
+            const { department } = req.query;
             const where = {
                 role: "Group_Leader",
             };
-            if (departement) {
-                where.departement = departement;
+            if (department) {
+                where.department = department;
             }
             const groupLeaders = await prisma.user.findMany({
                 where,
@@ -134,13 +134,13 @@ class UserController {
                     lastName: true,
                     nrp: true,
                     role: true,
-                    departement: true,
-                    posision: true,
+                    department: true,
+                    position: true,
                     createdAt: true,
                     updatedAt: true,
                 },
                 orderBy: {
-                    departement: "asc",
+                    department: "asc",
                 },
             });
             return res.status(200).json({
@@ -161,17 +161,17 @@ class UserController {
     }
     async getStaffandNonStaffProfile(req, res) {
         try {
-            const { departement, posision } = req.query;
+            const { department, position } = req.query;
             const where = {
                 role: {
                     in: ["Staff", "Non_Staff"],
                 },
             };
-            if (departement) {
-                where.departement = departement;
+            if (department) {
+                where.department = department;
             }
-            if (posision) {
-                where.posision = posision;
+            if (position) {
+                where.position = position;
             }
             const staffUsers = await prisma.user.findMany({
                 where,
@@ -181,8 +181,8 @@ class UserController {
                     lastName: true,
                     nrp: true,
                     role: true,
-                    departement: true,
-                    posision: true,
+                    department: true,
+                    position: true,
                     createdAt: true,
                     updatedAt: true,
                 },
@@ -191,7 +191,7 @@ class UserController {
                         role: "asc",
                     },
                     {
-                        departement: "asc",
+                        department: "asc",
                     },
                 ],
             });
@@ -231,8 +231,8 @@ class UserController {
                     lastName: true,
                     nrp: true,
                     role: true,
-                    departement: true,
-                    posision: true,
+                    department: true,
+                    position: true,
                     createdAt: true,
                     updatedAt: true,
                 },
@@ -261,7 +261,7 @@ class UserController {
     async updateUserProfile(req, res) {
         try {
             const { id } = req.params;
-            const { firstName, lastName, role, departement, posision } = req.body;
+            const { firstName, lastName, role, department, position } = req.body;
             const existingUser = await prisma.user.findUnique({
                 where: { id },
             });
@@ -277,8 +277,8 @@ class UserController {
                     ...(firstName && { firstName }),
                     ...(lastName && { lastName }),
                     ...(role && { role }),
-                    ...(departement && { departement }),
-                    ...(posision && { posision }),
+                    ...(department && { department }),
+                    ...(position && { position }),
                 },
                 select: {
                     id: true,
@@ -286,8 +286,8 @@ class UserController {
                     lastName: true,
                     nrp: true,
                     role: true,
-                    departement: true,
-                    posision: true,
+                    department: true,
+                    position: true,
                     updatedAt: true,
                 },
             });
@@ -392,8 +392,8 @@ class UserController {
                     lastName: true,
                     nrp: true,
                     role: true,
-                    departement: true,
-                    posision: true,
+                    department: true,
+                    position: true,
                     updatedAt: true,
                 },
             });
