@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_1 = require("./config/swagger");
 const auth_router_1 = require("./router/auth.router");
 const user_router_1 = require("./router/user.router");
@@ -23,20 +22,67 @@ app.get("/", (req, res) => {
         timestamp: new Date().toISOString(),
     });
 });
-const swaggerOptions = {
-    customCss: ".swagger-ui .topbar { display: none }",
-    customSiteTitle: "Suggestion System BDP API Documentation",
-    swaggerOptions: {
+app.get("/api-docs", (req, res) => {
+    const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Suggestion System BDP API Documentation</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css" />
+  <style>
+    html {
+      box-sizing: border-box;
+      overflow: -moz-scrollbars-vertical;
+      overflow-y: scroll;
+    }
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+    body {
+      margin:0;
+      background: #fafafa;
+    }
+    .swagger-ui .topbar { display: none; }
+  </style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function() {
+      const spec = ${JSON.stringify(swagger_1.swaggerSpec)};
+      const ui = SwaggerUIBundle({
+        spec: spec,
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
         persistAuthorization: true,
         displayRequestDuration: true,
         docExpansion: "none",
         filter: true,
         showRequestHeaders: true,
-        tryItOutEnabled: true,
-    },
-};
-app.use("/api-docs", swagger_ui_express_1.default.serve);
-app.get("/api-docs", swagger_ui_express_1.default.setup(swagger_1.swaggerSpec, swaggerOptions));
+        tryItOutEnabled: true
+      });
+    };
+  </script>
+</body>
+</html>
+  `;
+    res.send(html);
+});
+app.get("/api-docs.json", (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    res.send(swagger_1.swaggerSpec);
+});
 const authRouter = new auth_router_1.AuthRouter();
 const userRouter = new user_router_1.UserRouter();
 const submitFormRouter = new submit_form_router_1.SubmitFormRouter();
