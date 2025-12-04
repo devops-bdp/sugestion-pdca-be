@@ -13,14 +13,68 @@ export class UserRouter {
   }
 
   private initializeRoutes() {
-    // Get current user profile (authenticated users only)
+    /**
+     * @swagger
+     * /api/users/profile:
+     *   get:
+     *     summary: Get current user profile
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: User profile retrieved successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                 data:
+     *                   $ref: '#/components/schemas/User'
+     *       401:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal server error
+     */
     this.router.get(
       "/profile",
       verifyUser,
       this.userController.getUserProfile.bind(this.userController)
     );
 
-    // Get all users (Admin only)
+    /**
+     * @swagger
+     * /api/users/all:
+     *   get:
+     *     summary: Get all users (Admin only)
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: List of all users
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                 count:
+     *                   type: integer
+     *                 data:
+     *                   type: array
+     *                   items:
+     *                     $ref: '#/components/schemas/User'
+     *       401:
+     *         description: Unauthorized
+     *       403:
+     *         description: Forbidden - Admin access required
+     *       500:
+     *         description: Internal server error
+     */
     this.router.get(
       "/all",
       verifyUser,
@@ -28,7 +82,35 @@ export class UserRouter {
       this.userController.getAllUserProfile.bind(this.userController)
     );
 
-    // Get all Group Leaders (Supervisors and above)
+    /**
+     * @swagger
+     * /api/users/group-leaders:
+     *   get:
+     *     summary: Get all Group Leaders (Supervisors and above)
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: List of group leaders
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                 data:
+     *                   type: array
+     *                   items:
+     *                     $ref: '#/components/schemas/User'
+     *       401:
+     *         description: Unauthorized
+     *       403:
+     *         description: Forbidden - Supervisor access required
+     *       500:
+     *         description: Internal server error
+     */
     this.router.get(
       "/group-leaders",
       verifyUser,
@@ -36,7 +118,35 @@ export class UserRouter {
       this.userController.getGroupLeaderProfile.bind(this.userController)
     );
 
-    // Get Staff and Non-Staff (Group Leaders and above)
+    /**
+     * @swagger
+     * /api/users/staff:
+     *   get:
+     *     summary: Get Staff and Non-Staff users (Group Leaders and above)
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: List of staff and non-staff users
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                 data:
+     *                   type: array
+     *                   items:
+     *                     $ref: '#/components/schemas/User'
+     *       401:
+     *         description: Unauthorized
+     *       403:
+     *         description: Forbidden - Group Leader access required
+     *       500:
+     *         description: Internal server error
+     */
     this.router.get(
       "/staff",
       verifyUser,
@@ -44,7 +154,117 @@ export class UserRouter {
       this.userController.getStaffandNonStaffProfile.bind(this.userController)
     );
 
-    // Get user by ID (Admin only)
+    /**
+     * @swagger
+     * /api/users/{id}:
+     *   get:
+     *     summary: Get user by ID (Admin only)
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: User ID
+     *     responses:
+     *       200:
+     *         description: User found
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                 data:
+     *                   $ref: '#/components/schemas/User'
+     *       404:
+     *         description: User not found
+     *       401:
+     *         description: Unauthorized
+     *       403:
+     *         description: Forbidden - Admin access required
+     *       500:
+     *         description: Internal server error
+     *   put:
+     *     summary: Update user profile (Admin only)
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: User ID
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               firstName:
+     *                 type: string
+     *               lastName:
+     *                 type: string
+     *               role:
+     *                 type: string
+     *               department:
+     *                 type: string
+     *               position:
+     *                 type: string
+     *               permissionLevel:
+     *                 type: string
+     *     responses:
+     *       200:
+     *         description: User updated successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/SuccessResponse'
+     *       400:
+     *         description: Bad request
+     *       401:
+     *         description: Unauthorized
+     *       403:
+     *         description: Forbidden - Admin access required
+     *       404:
+     *         description: User not found
+     *       500:
+     *         description: Internal server error
+     *   delete:
+     *     summary: Delete user (Super Admin only)
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: User ID
+     *     responses:
+     *       200:
+     *         description: User deleted successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/SuccessResponse'
+     *       401:
+     *         description: Unauthorized
+     *       403:
+     *         description: Forbidden - Super Admin access required
+     *       404:
+     *         description: User not found
+     *       500:
+     *         description: Internal server error
+     */
     this.router.get(
       "/:id",
       verifyUser,
@@ -52,7 +272,6 @@ export class UserRouter {
       this.userController.getUserById.bind(this.userController)
     );
 
-    // Update user (Admin only)
     this.router.put(
       "/:id",
       verifyUser,
@@ -60,7 +279,6 @@ export class UserRouter {
       this.userController.updateUserProfile.bind(this.userController)
     );
 
-    // Delete user (Super Admin only)
     this.router.delete(
       "/:id",
       verifyUser,
