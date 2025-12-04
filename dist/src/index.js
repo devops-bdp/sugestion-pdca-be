@@ -11,8 +11,6 @@ const swagger_1 = require("./config/swagger");
 const auth_router_1 = require("./router/auth.router");
 const user_router_1 = require("./router/user.router");
 const submit_form_router_1 = require("./router/submit-form.router");
-
-
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -22,7 +20,6 @@ app.get("/", (req, res) => {
     res.json({
         message: "Suggestion System API is running",
         status: "healthy",
-
         timestamp: new Date().toISOString(),
     });
 });
@@ -36,12 +33,10 @@ const submitFormRouter = new submit_form_router_1.SubmitFormRouter();
 app.use("/api/auth", authRouter.getRouter());
 app.use("/api/users", userRouter.getRouter());
 app.use("/api/suggestions", submitFormRouter.getRouter());
-
 app.use((req, res) => {
     res.status(404).json({
         success: false,
         message: "Route not found",
-
         path: req.path,
 
     });
