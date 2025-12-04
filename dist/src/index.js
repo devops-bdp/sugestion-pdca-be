@@ -38,6 +38,7 @@ app.use((req, res) => {
         success: false,
         message: "Route not found",
         path: req.path,
+
     });
 });
 const PORT = process.env.PORT || 8000;
