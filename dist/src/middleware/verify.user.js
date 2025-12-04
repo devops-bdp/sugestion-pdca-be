@@ -44,8 +44,8 @@ const verifyUser = async (req, res, next) => {
                 lastName: true,
                 nrp: true,
                 role: true,
-                departement: true,
-                posision: true,
+                department: true,
+                position: true,
             },
         });
         if (!user) {
@@ -58,8 +58,8 @@ const verifyUser = async (req, res, next) => {
             id: decoded.id,
             nrp: decoded.nrp,
             role: decoded.role,
-            departement: decoded.departement,
-            posision: decoded.posision,
+            department: decoded.department,
+            position: decoded.position,
         };
         next();
     }
@@ -112,7 +112,7 @@ const verifyDepartment = (...allowedDepartments) => {
                 message: "Unauthorized",
             });
         }
-        if (!allowedDepartments.includes(req.user.departement)) {
+        if (!allowedDepartments.includes(req.user.department)) {
             return res.status(403).json({
                 success: false,
                 message: "Forbidden: Access restricted to specific departments",

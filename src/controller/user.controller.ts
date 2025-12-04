@@ -36,8 +36,8 @@ export class UserController {
           lastName: true,
           nrp: true,
           role: true,
-          departement: true,
-          posision: true,
+          department: true,
+          position: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -68,7 +68,7 @@ export class UserController {
   // Get all users (Admin only)
   async getAllUserProfile(req: Request, res: Response) {
     try {
-      const { page = 1, limit = 10, search, departement, role } = req.query;
+      const { page = 1, limit = 10, search, department, role } = req.query;
 
       const skip = (Number(page) - 1) * Number(limit);
       const take = Number(limit);
@@ -83,8 +83,8 @@ export class UserController {
         ];
       }
 
-      if (departement) {
-        where.departement = departement as string;
+      if (department) {
+        where.department = department as string;
       }
 
       if (role) {
@@ -103,8 +103,8 @@ export class UserController {
           lastName: true,
           nrp: true,
           role: true,
-          departement: true,
-          posision: true,
+          department: true,
+          position: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -139,15 +139,15 @@ export class UserController {
   // Get all Group Leaders
   async getGroupLeaderProfile(req: Request, res: Response) {
     try {
-      const { departement } = req.query;
+      const { department } = req.query;
 
       const where: any = {
         role: "Group_Leader",
       };
 
       // Filter by department if provided
-      if (departement) {
-        where.departement = departement as string;
+      if (department) {
+        where.department = department as string;
       }
 
       const groupLeaders = await prisma.user.findMany({
@@ -158,13 +158,13 @@ export class UserController {
           lastName: true,
           nrp: true,
           role: true,
-          departement: true,
-          posision: true,
+          department: true,
+          position: true,
           createdAt: true,
           updatedAt: true,
         },
         orderBy: {
-          departement: "asc",
+          department: "asc",
         },
       });
 
@@ -187,7 +187,7 @@ export class UserController {
   // Get all Staff and Non-Staff users
   async getStaffandNonStaffProfile(req: Request, res: Response) {
     try {
-      const { departement, posision } = req.query;
+      const { department, position } = req.query;
 
       const where: any = {
         role: {
@@ -196,13 +196,13 @@ export class UserController {
       };
 
       // Filter by department if provided
-      if (departement) {
-        where.departement = departement as string;
+      if (department) {
+        where.department = department as string;
       }
 
       // Filter by position if provided
-      if (posision) {
-        where.posision = posision as string;
+      if (position) {
+        where.position = position as string;
       }
 
       const staffUsers = await prisma.user.findMany({
@@ -213,8 +213,8 @@ export class UserController {
           lastName: true,
           nrp: true,
           role: true,
-          departement: true,
-          posision: true,
+          department: true,
+          position: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -223,7 +223,7 @@ export class UserController {
             role: "asc", // Non_Staff first, then Staff
           },
           {
-            departement: "asc",
+            department: "asc",
           },
         ],
       });
@@ -268,8 +268,8 @@ export class UserController {
           lastName: true,
           nrp: true,
           role: true,
-          departement: true,
-          posision: true,
+          department: true,
+          position: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -301,7 +301,7 @@ export class UserController {
   async updateUserProfile(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { firstName, lastName, role, departement, posision } = req.body;
+      const { firstName, lastName, role, department, position } = req.body;
 
       // Check if user exists
       const existingUser = await prisma.user.findUnique({
@@ -322,8 +322,8 @@ export class UserController {
           ...(firstName && { firstName }),
           ...(lastName && { lastName }),
           ...(role && { role }),
-          ...(departement && { departement }),
-          ...(posision && { posision }),
+          ...(department && { department }),
+          ...(position && { position }),
         },
         select: {
           id: true,
@@ -331,8 +331,8 @@ export class UserController {
           lastName: true,
           nrp: true,
           role: true,
-          departement: true,
-          posision: true,
+          department: true,
+          position: true,
           updatedAt: true,
         },
       });
@@ -462,8 +462,8 @@ async updateMyProfile(req: Request, res: Response) {
         lastName: true,
         nrp: true,
         role: true,
-        departement: true,
-        posision: true,
+        department: true,
+        position: true,
         updatedAt: true,
       },
     });

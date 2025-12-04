@@ -25,13 +25,13 @@ BigInt.prototype.toJSON = function () {
 class AuthController {
     async register(req, res) {
         try {
-            const { firstName, lastName, nrp, role, departement, posision, password, } = req.body;
+            const { firstName, lastName, nrp, role, department, position, password } = req.body;
             if (!firstName ||
                 !lastName ||
                 !nrp ||
                 !role ||
-                !departement ||
-                !posision ||
+                !department ||
+                !position ||
                 !password) {
                 return res.status(400).json({
                     success: false,
@@ -55,8 +55,8 @@ class AuthController {
                     lastName,
                     nrp: BigInt(nrp),
                     role,
-                    departement,
-                    posision,
+                    department,
+                    position,
                     password: hashedPassword,
                 },
                 select: {
@@ -65,8 +65,8 @@ class AuthController {
                     lastName: true,
                     nrp: true,
                     role: true,
-                    departement: true,
-                    posision: true,
+                    department: true,
+                    position: true,
                     createdAt: true,
                 },
             });
@@ -89,10 +89,12 @@ class AuthController {
         const { nrp, password } = req.body;
         try {
             if (!nrp || !password) {
-                return res.status(400).json({ message: "nrp and password are required" });
+                return res
+                    .status(400)
+                    .json({ message: "nrp and password are required" });
             }
             const user = await prisma.user.findFirst({
-                where: { nrp: BigInt(nrp) }
+                where: { nrp: BigInt(nrp) },
             });
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
@@ -105,8 +107,8 @@ class AuthController {
                 id: user.id,
                 nrp: user.nrp.toString(),
                 role: user.role,
-                departement: user.departement,
-                posision: user.posision,
+                department: user.department,
+                position: user.position,
             }, process.env.JWT_SECRET, {
                 expiresIn: "1h",
             });
@@ -118,9 +120,9 @@ class AuthController {
                     nrp: user.nrp,
                     name: `${user.firstName} ${user.lastName}`,
                     role: user.role,
-                    departement: user.departement,
-                    posision: user.posision,
-                }
+                    department: user.department,
+                    position: user.position,
+                },
             });
         }
         catch (error) {

@@ -6,8 +6,8 @@ declare global {
                 id: string;
                 nrp: string;
                 role: string;
-                departement: string;
-                posision: string;
+                department: string;
+                position: string;
             };
         }
     }

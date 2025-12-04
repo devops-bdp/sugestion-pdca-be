@@ -22,8 +22,8 @@ declare global {
         id: string;
         nrp: string;
         role: string;
-        departement: string;
-        posision: string;
+        department: string;
+        position: string;
       };
     }
   }
@@ -68,8 +68,8 @@ export const verifyUser = async (
       id: string;
       nrp: string;
       role: string;
-      departement: string;
-      posision: string;
+      department: string;
+      position: string;
     };
 
     // Optional: Check if user still exists in database
@@ -81,8 +81,8 @@ export const verifyUser = async (
         lastName: true,
         nrp: true,
         role: true,
-        departement: true,
-        posision: true,
+        department: true,
+        position: true,
       },
     });
 
@@ -98,8 +98,8 @@ export const verifyUser = async (
       id: decoded.id,
       nrp: decoded.nrp,
       role: decoded.role,
-      departement: decoded.departement,
-      posision: decoded.posision,
+      department: decoded.department,
+      position: decoded.position,
     };
 
     next();
@@ -158,7 +158,7 @@ export const verifyDepartment = (...allowedDepartments: string[]) => {
       });
     }
 
-    if (!allowedDepartments.includes(req.user.departement)) {
+    if (!allowedDepartments.includes(req.user.department)) {
       return res.status(403).json({
         success: false,
         message: "Forbidden: Access restricted to specific departments",
