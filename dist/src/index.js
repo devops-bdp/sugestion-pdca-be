@@ -23,6 +23,7 @@ app.get("/", (req, res) => {
         timestamp: new Date().toISOString(),
     });
 });
+
 const swaggerOptions = {
     customCss: ".swagger-ui .topbar { display: none }",
     customSiteTitle: "Suggestion System BDP API Documentation",
