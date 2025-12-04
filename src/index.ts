@@ -58,13 +58,24 @@ app.get("/", (req: Request, res: Response) => {
  *       200:
  *         description: API documentation
  */
+const swaggerOptions = {
+  customCss: ".swagger-ui .topbar { display: none }",
+  customSiteTitle: "Suggestion System BDP API Documentation",
+  swaggerOptions: {
+    persistAuthorization: true,
+    displayRequestDuration: true,
+    docExpansion: "none",
+    filter: true,
+    showRequestHeaders: true,
+    tryItOutEnabled: true,
+  },
+};
+
+// Serve Swagger UI
 app.use(
   "/api-docs",
   swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customCss: ".swagger-ui .topbar { display: none }",
-    customSiteTitle: "Suggestion System BDP API Documentation",
-  })
+  swaggerUi.setup(swaggerSpec, swaggerOptions)
 );
 
 // Routes

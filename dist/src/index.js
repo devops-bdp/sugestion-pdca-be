@@ -23,10 +23,21 @@ app.get("/", (req, res) => {
         timestamp: new Date().toISOString(),
     });
 });
-app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerSpec, {
+
+const swaggerOptions = {
     customCss: ".swagger-ui .topbar { display: none }",
     customSiteTitle: "Suggestion System BDP API Documentation",
-}));
+    swaggerOptions: {
+        persistAuthorization: true,
+        displayRequestDuration: true,
+        docExpansion: "none",
+        filter: true,
+        showRequestHeaders: true,
+        tryItOutEnabled: true,
+    },
+};
+app.use("/api-docs", swagger_ui_express_1.default.serve);
+app.get("/api-docs", swagger_ui_express_1.default.setup(swagger_1.swaggerSpec, swaggerOptions));
 const authRouter = new auth_router_1.AuthRouter();
 const userRouter = new user_router_1.UserRouter();
 const submitFormRouter = new submit_form_router_1.SubmitFormRouter();
@@ -38,7 +49,6 @@ app.use((req, res) => {
         success: false,
         message: "Route not found",
         path: req.path,
-
     });
 });
 const PORT = process.env.PORT || 8000;
