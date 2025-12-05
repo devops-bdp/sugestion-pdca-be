@@ -108,18 +108,30 @@ export class SubmitFormController {
   async getAllSuggestions(req: Request, res: Response) {
     try {
       const { statusIde, department, userId, kriteriaSS } = req.query;
+      const userDepartment = req.user?.department;
+
+      // Build where condition with department filtering
+      const whereCondition: any = {
+        ...(statusIde && { statusIde: statusIde as any }),
+        ...(userId && { userId: userId as string }),
+        ...(kriteriaSS && { kriteriaSS: kriteriaSS as any }),
+      };
+
+      // Department filtering: only show suggestions from same department (unless ALL_DEPT)
+      if (userDepartment && userDepartment !== "ALL_DEPT") {
+        // User can only see suggestions from their own department
+        whereCondition.user = {
+          department: userDepartment as any,
+        };
+      } else if (department) {
+        // If user is ALL_DEPT, they can filter by any department
+        whereCondition.user = {
+          department: department as any,
+        };
+      }
 
       const suggestions = await prisma.suggestion.findMany({
-        where: {
-          ...(statusIde && { statusIde: statusIde as any }),
-          ...(userId && { userId: userId as string }),
-          ...(kriteriaSS && { kriteriaSS: kriteriaSS as any }),
-          ...(department && {
-            user: {
-              department: department as any,
-            },
-          }),
-        },
+        where: whereCondition,
         include: {
           user: {
             select: {
@@ -163,6 +175,7 @@ export class SubmitFormController {
   async getSuggestionById(req: Request, res: Response) {
     try {
       const { id } = req.params;
+      const userDepartment = req.user?.department;
 
       const suggestion = await prisma.suggestion.findUnique({
         where: { id },
@@ -198,6 +211,18 @@ export class SubmitFormController {
         });
       }
 
+      // Check department access: user must be from same department or ALL_DEPT
+      if (
+        userDepartment &&
+        userDepartment !== "ALL_DEPT" &&
+        suggestion.user.department !== userDepartment
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden: You can only access suggestions from your department",
+        });
+      }
+
       return res.status(200).json({
         success: true,
         data: suggestion,
@@ -217,12 +242,44 @@ export class SubmitFormController {
     try {
       const { id } = req.params;
       const { statusIde, komentarAtasan } = req.body;
+      const userDepartment = req.user?.department;
 
       // Validate status
       if (!["DIAJUKAN", "APPROVE", "DINILAI"].includes(statusIde)) {
         return res.status(400).json({
           success: false,
           message: "Invalid status",
+        });
+      }
+
+      // Check if suggestion exists and get user department
+      const existingSuggestion = await prisma.suggestion.findUnique({
+        where: { id },
+        include: {
+          user: {
+            select: {
+              department: true,
+            },
+          },
+        },
+      });
+
+      if (!existingSuggestion) {
+        return res.status(404).json({
+          success: false,
+          message: "Suggestion not found",
+        });
+      }
+
+      // Check department access: user must be from same department or ALL_DEPT
+      if (
+        userDepartment &&
+        userDepartment !== "ALL_DEPT" &&
+        existingSuggestion.user.department !== userDepartment
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden: You can only approve suggestions from your department",
         });
       }
 
@@ -265,11 +322,43 @@ export class SubmitFormController {
     try {
       const { id } = req.params;
       const updateData = req.body;
+      const userDepartment = req.user?.department;
 
       // Remove fields that shouldn't be updated directly
       delete updateData.id;
       delete updateData.userId;
       delete updateData.createdAt;
+
+      // Check if suggestion exists and get user department
+      const existingSuggestion = await prisma.suggestion.findUnique({
+        where: { id },
+        include: {
+          user: {
+            select: {
+              department: true,
+            },
+          },
+        },
+      });
+
+      if (!existingSuggestion) {
+        return res.status(404).json({
+          success: false,
+          message: "Suggestion not found",
+        });
+      }
+
+      // Check department access: user must be from same department or ALL_DEPT
+      if (
+        userDepartment &&
+        userDepartment !== "ALL_DEPT" &&
+        existingSuggestion.user.department !== userDepartment
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden: You can only update suggestions from your department",
+        });
+      }
 
       const suggestion = await prisma.suggestion.update({
         where: { id },
@@ -298,6 +387,38 @@ export class SubmitFormController {
   async deleteSuggestion(req: Request, res: Response) {
     try {
       const { id } = req.params;
+      const userDepartment = req.user?.department;
+
+      // Check if suggestion exists and get user department
+      const existingSuggestion = await prisma.suggestion.findUnique({
+        where: { id },
+        include: {
+          user: {
+            select: {
+              department: true,
+            },
+          },
+        },
+      });
+
+      if (!existingSuggestion) {
+        return res.status(404).json({
+          success: false,
+          message: "Suggestion not found",
+        });
+      }
+
+      // Check department access: user must be from same department or ALL_DEPT
+      if (
+        userDepartment &&
+        userDepartment !== "ALL_DEPT" &&
+        existingSuggestion.user.department !== userDepartment
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden: You can only delete suggestions from your department",
+        });
+      }
 
       await prisma.suggestion.delete({
         where: { id },
@@ -326,11 +447,43 @@ export class SubmitFormController {
         skorKriteria,
         komentarPenilaian,
       } = req.body;
+      const userDepartment = req.user?.department;
 
       if (!suggestionId || !penilaianKriteria || skorKriteria === undefined) {
         return res.status(400).json({
           success: false,
           message: "Missing required fields",
+        });
+      }
+
+      // Check if suggestion exists and get user department
+      const existingSuggestion = await prisma.suggestion.findUnique({
+        where: { id: suggestionId },
+        include: {
+          user: {
+            select: {
+              department: true,
+            },
+          },
+        },
+      });
+
+      if (!existingSuggestion) {
+        return res.status(404).json({
+          success: false,
+          message: "Suggestion not found",
+        });
+      }
+
+      // Check department access: user must be from same department or ALL_DEPT
+      if (
+        userDepartment &&
+        userDepartment !== "ALL_DEPT" &&
+        existingSuggestion.user.department !== userDepartment
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden: You can only evaluate suggestions from your department",
         });
       }
 
@@ -379,10 +532,19 @@ export class SubmitFormController {
   async getStatistics(req: Request, res: Response) {
     try {
       const { userId, department } = req.query;
+      const userDepartment = req.user?.department;
 
       const whereCondition: any = {};
       if (userId) whereCondition.userId = userId;
-      if (department) {
+
+      // Department filtering: only show statistics from same department (unless ALL_DEPT)
+      if (userDepartment && userDepartment !== "ALL_DEPT") {
+        // User can only see statistics from their own department
+        whereCondition.user = {
+          department: userDepartment as any,
+        };
+      } else if (department) {
+        // If user is ALL_DEPT, they can filter by any department
         whereCondition.user = {
           department: department as any,
         };

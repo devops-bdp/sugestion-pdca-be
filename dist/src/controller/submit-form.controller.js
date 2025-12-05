@@ -83,17 +83,24 @@ class SubmitFormController {
     async getAllSuggestions(req, res) {
         try {
             const { statusIde, department, userId, kriteriaSS } = req.query;
+            const userDepartment = req.user?.department;
+            const whereCondition = {
+                ...(statusIde && { statusIde: statusIde }),
+                ...(userId && { userId: userId }),
+                ...(kriteriaSS && { kriteriaSS: kriteriaSS }),
+            };
+            if (userDepartment && userDepartment !== "ALL_DEPT") {
+                whereCondition.user = {
+                    department: userDepartment,
+                };
+            }
+            else if (department) {
+                whereCondition.user = {
+                    department: department,
+                };
+            }
             const suggestions = await prisma.suggestion.findMany({
-                where: {
-                    ...(statusIde && { statusIde: statusIde }),
-                    ...(userId && { userId: userId }),
-                    ...(kriteriaSS && { kriteriaSS: kriteriaSS }),
-                    ...(department && {
-                        user: {
-                            department: department,
-                        },
-                    }),
-                },
+                where: whereCondition,
                 include: {
                     user: {
                         select: {
@@ -135,6 +142,7 @@ class SubmitFormController {
     async getSuggestionById(req, res) {
         try {
             const { id } = req.params;
+            const userDepartment = req.user?.department;
             const suggestion = await prisma.suggestion.findUnique({
                 where: { id },
                 include: {
@@ -167,6 +175,14 @@ class SubmitFormController {
                     message: "Suggestion not found",
                 });
             }
+            if (userDepartment &&
+                userDepartment !== "ALL_DEPT" &&
+                suggestion.user.department !== userDepartment) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: You can only access suggestions from your department",
+                });
+            }
             return res.status(200).json({
                 success: true,
                 data: suggestion,
@@ -185,10 +201,35 @@ class SubmitFormController {
         try {
             const { id } = req.params;
             const { statusIde, komentarAtasan } = req.body;
+            const userDepartment = req.user?.department;
             if (!["DIAJUKAN", "APPROVE", "DINILAI"].includes(statusIde)) {
                 return res.status(400).json({
                     success: false,
                     message: "Invalid status",
+                });
+            }
+            const existingSuggestion = await prisma.suggestion.findUnique({
+                where: { id },
+                include: {
+                    user: {
+                        select: {
+                            department: true,
+                        },
+                    },
+                },
+            });
+            if (!existingSuggestion) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Suggestion not found",
+                });
+            }
+            if (userDepartment &&
+                userDepartment !== "ALL_DEPT" &&
+                existingSuggestion.user.department !== userDepartment) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: You can only approve suggestions from your department",
                 });
             }
             const suggestion = await prisma.suggestion.update({
@@ -226,9 +267,34 @@ class SubmitFormController {
         try {
             const { id } = req.params;
             const updateData = req.body;
+            const userDepartment = req.user?.department;
             delete updateData.id;
             delete updateData.userId;
             delete updateData.createdAt;
+            const existingSuggestion = await prisma.suggestion.findUnique({
+                where: { id },
+                include: {
+                    user: {
+                        select: {
+                            department: true,
+                        },
+                    },
+                },
+            });
+            if (!existingSuggestion) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Suggestion not found",
+                });
+            }
+            if (userDepartment &&
+                userDepartment !== "ALL_DEPT" &&
+                existingSuggestion.user.department !== userDepartment) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: You can only update suggestions from your department",
+                });
+            }
             const suggestion = await prisma.suggestion.update({
                 where: { id },
                 data: updateData,
@@ -254,6 +320,31 @@ class SubmitFormController {
     async deleteSuggestion(req, res) {
         try {
             const { id } = req.params;
+            const userDepartment = req.user?.department;
+            const existingSuggestion = await prisma.suggestion.findUnique({
+                where: { id },
+                include: {
+                    user: {
+                        select: {
+                            department: true,
+                        },
+                    },
+                },
+            });
+            if (!existingSuggestion) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Suggestion not found",
+                });
+            }
+            if (userDepartment &&
+                userDepartment !== "ALL_DEPT" &&
+                existingSuggestion.user.department !== userDepartment) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: You can only delete suggestions from your department",
+                });
+            }
             await prisma.suggestion.delete({
                 where: { id },
             });
@@ -274,10 +365,35 @@ class SubmitFormController {
     async submitPenilaian(req, res) {
         try {
             const { suggestionId, penilaianKriteria, skorKriteria, komentarPenilaian, } = req.body;
+            const userDepartment = req.user?.department;
             if (!suggestionId || !penilaianKriteria || skorKriteria === undefined) {
                 return res.status(400).json({
                     success: false,
                     message: "Missing required fields",
+                });
+            }
+            const existingSuggestion = await prisma.suggestion.findUnique({
+                where: { id: suggestionId },
+                include: {
+                    user: {
+                        select: {
+                            department: true,
+                        },
+                    },
+                },
+            });
+            if (!existingSuggestion) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Suggestion not found",
+                });
+            }
+            if (userDepartment &&
+                userDepartment !== "ALL_DEPT" &&
+                existingSuggestion.user.department !== userDepartment) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: You can only evaluate suggestions from your department",
                 });
             }
             const penilaian = await prisma.formPenilaian.create({
@@ -319,10 +435,16 @@ class SubmitFormController {
     async getStatistics(req, res) {
         try {
             const { userId, department } = req.query;
+            const userDepartment = req.user?.department;
             const whereCondition = {};
             if (userId)
                 whereCondition.userId = userId;
-            if (department) {
+            if (userDepartment && userDepartment !== "ALL_DEPT") {
+                whereCondition.user = {
+                    department: userDepartment,
+                };
+            }
+            else if (department) {
                 whereCondition.user = {
                     department: department,
                 };
