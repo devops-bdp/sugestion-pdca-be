@@ -130,6 +130,60 @@ export class AuthRouter {
       "/login",
       this.authController.login.bind(this.authController)
     );
+
+    /**
+     * @swagger
+     * /api/auth/update-password:
+     *   put:
+     *     summary: Update user password
+     *     tags: [Auth]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - userId
+     *               - newPassword
+     *             properties:
+     *               userId:
+     *                 type: string
+     *               currentPassword:
+     *                 type: string
+     *                 description: Optional - current password for verification
+     *               newPassword:
+     *                 type: string
+     *                 format: password
+     *                 minLength: 6
+     *     responses:
+     *       200:
+     *         description: Password updated successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                 message:
+     *                   type: string
+     *       400:
+     *         description: Bad request
+     *       401:
+     *         description: Unauthorized - invalid current password
+     *       404:
+     *         description: User not found
+     *       500:
+     *         description: Internal server error
+     */
+    this.router.put(
+      "/update-password",
+      verifyUser,
+      this.authController.updatePassword.bind(this.authController)
+    );
   }
   public getRouter(): Router {
     return this.router;

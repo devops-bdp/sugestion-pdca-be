@@ -157,4 +157,70 @@ export class AuthController {
       return res.status(500).json({ message: "Internal server error" });
     }
   }
+
+  async updatePassword(req: Request, res: Response) {
+    try {
+      const { userId, currentPassword, newPassword } = req.body;
+
+      // Validation
+      if (!userId || !newPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "User ID and new password are required",
+        });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({
+          success: false,
+          message: "New password must be at least 6 characters long",
+        });
+      }
+
+      // Find user
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      // Verify current password if provided
+      if (currentPassword) {
+        const isPasswordValid = await compare(currentPassword, user.password);
+        if (!isPasswordValid) {
+          return res.status(401).json({
+            success: false,
+            message: "Current password is incorrect",
+          });
+        }
+      }
+
+      // Hash new password
+      const salt = await genSalt(10);
+      const hashedPassword = await hash(newPassword, salt);
+
+      // Update password
+      await prisma.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Password updated successfully",
+      });
+    } catch (error) {
+      console.error("Update password error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
 }

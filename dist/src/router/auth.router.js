@@ -13,6 +13,7 @@ class AuthRouter {
     initializeRoutes() {
         this.router.post("/register", verify_user_1.verifyUser, (0, verify_user_1.verifyRole)("Super_Admin"), this.authController.register.bind(this.authController));
         this.router.post("/login", this.authController.login.bind(this.authController));
+        this.router.put("/update-password", verify_user_1.verifyUser, this.authController.updatePassword.bind(this.authController));
     }
     getRouter() {
         return this.router;

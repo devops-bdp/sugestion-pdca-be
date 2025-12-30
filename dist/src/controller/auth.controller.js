@@ -138,5 +138,58 @@ class AuthController {
             return res.status(500).json({ message: "Internal server error" });
         }
     }
+    async updatePassword(req, res) {
+        try {
+            const { userId, currentPassword, newPassword } = req.body;
+            if (!userId || !newPassword) {
+                return res.status(400).json({
+                    success: false,
+                    message: "User ID and new password are required",
+                });
+            }
+            if (newPassword.length < 6) {
+                return res.status(400).json({
+                    success: false,
+                    message: "New password must be at least 6 characters long",
+                });
+            }
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+            });
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+            }
+            if (currentPassword) {
+                const isPasswordValid = await (0, bcrypt_1.compare)(currentPassword, user.password);
+                if (!isPasswordValid) {
+                    return res.status(401).json({
+                        success: false,
+                        message: "Current password is incorrect",
+                    });
+                }
+            }
+            const salt = await (0, bcrypt_1.genSalt)(10);
+            const hashedPassword = await (0, bcrypt_1.hash)(newPassword, salt);
+            await prisma.user.update({
+                where: { id: userId },
+                data: { password: hashedPassword },
+            });
+            return res.status(200).json({
+                success: true,
+                message: "Password updated successfully",
+            });
+        }
+        catch (error) {
+            console.error("Update password error:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Internal server error",
+                error: error instanceof Error ? error.message : "Unknown error",
+            });
+        }
+    }
 }
 exports.AuthController = AuthController;
