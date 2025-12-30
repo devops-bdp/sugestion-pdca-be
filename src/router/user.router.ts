@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { UserController } from "../controller/user.controller";
-import { verifyUser, verifyRole } from "../middleware/verify.user";
+import { verifyUser, verifyRole, verifyPermissionLevel } from "../middleware/verify.user";
 
 export class UserRouter {
   private router: Router;
@@ -78,7 +78,7 @@ export class UserRouter {
     this.router.get(
       "/all",
       verifyUser,
-      verifyRole("Super_Admin", "Dept_Head", "Project_Manager"),
+      verifyPermissionLevel("FULL_ACCESS"),
       this.userController.getAllUserProfile.bind(this.userController)
     );
 
@@ -114,7 +114,7 @@ export class UserRouter {
     this.router.get(
       "/group-leaders",
       verifyUser,
-      verifyRole("Super_Admin", "Dept_Head", "Project_Manager", "Supervisor"),
+      verifyPermissionLevel("APPROVAL_ONLY", "APPROVAL_SCORING", "FULL_ACCESS"),
       this.userController.getGroupLeaderProfile.bind(this.userController)
     );
 
@@ -150,7 +150,7 @@ export class UserRouter {
     this.router.get(
       "/staff",
       verifyUser,
-      verifyRole("Super_Admin", "Dept_Head", "Project_Manager", "Supervisor", "Group_Leader"),
+      verifyPermissionLevel("APPROVAL_ONLY", "APPROVAL_SCORING", "FULL_ACCESS"),
       this.userController.getStaffandNonStaffProfile.bind(this.userController)
     );
 
@@ -268,21 +268,21 @@ export class UserRouter {
     this.router.get(
       "/:id",
       verifyUser,
-      verifyRole("Super_Admin", "Dept_Head", "Project_Manager"),
+      verifyPermissionLevel("FULL_ACCESS"),
       this.userController.getUserById.bind(this.userController)
     );
 
     this.router.put(
       "/:id",
       verifyUser,
-      verifyRole("Super_Admin", "Dept_Head"),
+      verifyPermissionLevel("FULL_ACCESS"),
       this.userController.updateUserProfile.bind(this.userController)
     );
 
     this.router.delete(
       "/:id",
       verifyUser,
-      verifyRole("Super_Admin"),
+      verifyPermissionLevel("FULL_ACCESS"),
       this.userController.deleteUser.bind(this.userController)
     );
   }

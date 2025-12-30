@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "../controller/auth.controller";
-import { verifyUser, verifyRole } from "../middleware/verify.user";
+import { verifyUser, verifyRole, verifyPermissionLevel } from "../middleware/verify.user";
 
 export class AuthRouter {
   private authController: AuthController;

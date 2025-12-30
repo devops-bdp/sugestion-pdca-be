@@ -241,6 +241,70 @@ export class SubmitFormRouter {
 
     /**
      * @swagger
+     * /api/suggestions/penilaian/multiple:
+     *   post:
+     *     summary: Submit multiple scoring/evaluation criteria at once
+     *     tags: [Suggestions]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - suggestionId
+     *               - penilaianList
+     *             properties:
+     *               suggestionId:
+     *                 type: string
+     *                 description: Suggestion ID to evaluate
+     *               penilaianList:
+     *                 type: array
+     *                 description: Array of evaluation criteria
+     *                 items:
+     *                   type: object
+     *                   required:
+     *                     - penilaianKriteria
+     *                     - skorKriteria
+     *                   properties:
+     *                     penilaianKriteria:
+     *                       type: string
+     *                       description: Evaluation criteria name
+     *                     skorKriteria:
+     *                       type: integer
+     *                       description: Score for the criteria
+     *                     komentarPenilaian:
+     *                       type: string
+     *                       description: Evaluation comment (optional)
+     *     responses:
+     *       201:
+     *         description: All evaluations submitted successfully
+     *       400:
+     *         description: Missing required fields
+     *       401:
+     *         description: Unauthorized
+     *       403:
+     *         description: Forbidden - Scoring access required
+     *       500:
+     *         description: Internal server error
+     */
+    this.router.post(
+      "/penilaian/multiple",
+      verifyUser,
+      verifyRole(
+        "Super_Admin",
+        "Dept_Head",
+        "Project_Manager",
+        "Supervisor",
+        "Group_Leader"
+      ),
+      this.submitFormController.submitMultiplePenilaian.bind(this.submitFormController)
+    );
+
+    /**
+     * @swagger
      * /api/suggestions/statistics:
      *   get:
      *     summary: Get suggestion statistics

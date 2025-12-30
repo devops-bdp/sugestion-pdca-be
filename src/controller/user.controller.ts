@@ -36,6 +36,7 @@ export class UserController {
           lastName: true,
           nrp: true,
           role: true,
+          permissionLevel: true,
           department: true,
           position: true,
           createdAt: true,
@@ -103,6 +104,7 @@ export class UserController {
           lastName: true,
           nrp: true,
           role: true,
+          permissionLevel: true,
           department: true,
           position: true,
           createdAt: true,
@@ -301,7 +303,7 @@ export class UserController {
   async updateUserProfile(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { firstName, lastName, role, department, position } = req.body;
+      const { firstName, lastName, role, department, position, permissionLevel } = req.body;
 
       // Check if user exists
       const existingUser = await prisma.user.findUnique({
@@ -315,6 +317,19 @@ export class UserController {
         });
       }
 
+      // Determine permissionLevel based on role
+      // Staff and Non_Staff must always have SUBMITTER permission
+      let finalPermissionLevel = permissionLevel;
+      const targetRole = role || existingUser.role;
+      
+      if (targetRole === "Staff" || targetRole === "Non_Staff") {
+        // Force SUBMITTER for Staff and Non_Staff
+        finalPermissionLevel = "SUBMITTER";
+      } else if (!permissionLevel) {
+        // If no permissionLevel provided and not Staff/Non_Staff, keep existing
+        finalPermissionLevel = existingUser.permissionLevel;
+      }
+
       // Update user
       const updatedUser = await prisma.user.update({
         where: { id },
@@ -324,6 +339,7 @@ export class UserController {
           ...(role && { role }),
           ...(department && { department }),
           ...(position && { position }),
+          ...(finalPermissionLevel && { permissionLevel: finalPermissionLevel as any }),
         },
         select: {
           id: true,
@@ -331,6 +347,7 @@ export class UserController {
           lastName: true,
           nrp: true,
           role: true,
+          permissionLevel: true,
           department: true,
           position: true,
           updatedAt: true,

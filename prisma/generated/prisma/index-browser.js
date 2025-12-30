@@ -148,6 +148,10 @@ exports.Prisma.SuggestionScalarFieldEnum = {
   kriteriaSS: 'kriteriaSS',
   sifatPerbaikan: 'sifatPerbaikan',
   statusIde: 'statusIde',
+  noRegistSS: 'noRegistSS',
+  tanggalUsulan: 'tanggalUsulan',
+  hubungan: 'hubungan',
+  tanggalEfektif: 'tanggalEfektif',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
@@ -157,7 +161,8 @@ exports.Prisma.SuggestionHistoryScalarFieldEnum = {
   id: 'id',
   suggestionId: 'suggestionId',
   statusIde: 'statusIde',
-  changedAt: 'changedAt'
+  changedAt: 'changedAt',
+  changedBy: 'changedBy'
 };
 
 exports.Prisma.FormPenilaianScalarFieldEnum = {

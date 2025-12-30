@@ -20,7 +20,8 @@ model User {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  suggestions Suggestion[]
+  suggestions       Suggestion[]
+  suggestionHistory SuggestionHistory[]
 }
 
 enum Role {
@@ -122,6 +123,10 @@ model Suggestion {
   kriteriaSS          KriteriaSS
   sifatPerbaikan      SifatPerbaikan
   statusIde           StatusIde      @default(DIAJUKAN)
+  noRegistSS          String? // Nomor registrasi SS (format: 01/SS-PDCA/XII/2025)
+  tanggalUsulan       DateTime? // Tanggal usulan
+  hubungan            String? // Hubungan (Pekerjaannya, Penemuan, Bukan)
+  tanggalEfektif      DateTime? // Tanggal efektif
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
   userId              String
@@ -136,8 +141,10 @@ model SuggestionHistory {
   suggestionId String
   statusIde    StatusIde
   changedAt    DateTime  @default(now())
+  changedBy    String? // User ID who made the change
 
   suggestion Suggestion @relation(fields: [suggestionId], references: [id], onDelete: Cascade)
+  user       User?      @relation(fields: [changedBy], references: [id], onDelete: SetNull)
 }
 
 model FormPenilaian {

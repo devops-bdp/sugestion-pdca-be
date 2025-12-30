@@ -6,6 +6,7 @@ declare global {
                 id: string;
                 nrp: string;
                 role: string;
+                permissionLevel: string;
                 department: string;
                 position: string;
             };
@@ -14,4 +15,5 @@ declare global {
 }
 export declare const verifyUser: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>> | undefined>;
 export declare const verifyRole: (...allowedRoles: string[]) => (req: Request, res: Response, next: NextFunction) => Response<any, Record<string, any>> | undefined;
+export declare const verifyPermissionLevel: (...allowedPermissionLevels: string[]) => (req: Request, res: Response, next: NextFunction) => void | Response<any, Record<string, any>>;
 export declare const verifyDepartment: (...allowedDepartments: string[]) => (req: Request, res: Response, next: NextFunction) => Response<any, Record<string, any>> | undefined;

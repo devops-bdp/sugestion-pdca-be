@@ -15,7 +15,7 @@ const prisma = new prisma_1.PrismaClient({ adapter });
 class SubmitFormController {
     async createSuggestion(req, res) {
         try {
-            const { judulIde, masalahYangDihadapi, uraianIde, ideProsesPerbaikan, hasilUraianProses, evaluasiIde, komentarAtasan, fotoSebelum, fotoSesudah, kriteriaSS, sifatPerbaikan, userId, } = req.body;
+            const { judulIde, masalahYangDihadapi, uraianIde, ideProsesPerbaikan, hasilUraianProses, evaluasiIde, komentarAtasan, fotoSebelum, fotoSesudah, kriteriaSS, sifatPerbaikan, userId, noRegistSS, tanggalUsulan, hubungan, tanggalEfektif, } = req.body;
             if (!judulIde ||
                 !masalahYangDihadapi ||
                 !uraianIde ||
@@ -29,6 +29,26 @@ class SubmitFormController {
                     success: false,
                     message: "Missing required fields",
                 });
+            }
+            let parsedTanggalUsulan;
+            let parsedTanggalEfektif;
+            if (tanggalUsulan) {
+                parsedTanggalUsulan = new Date(tanggalUsulan);
+                if (isNaN(parsedTanggalUsulan.getTime())) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Invalid tanggalUsulan format",
+                    });
+                }
+            }
+            if (tanggalEfektif) {
+                parsedTanggalEfektif = new Date(tanggalEfektif);
+                if (isNaN(parsedTanggalEfektif.getTime())) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Invalid tanggalEfektif format",
+                    });
+                }
             }
             const suggestion = await prisma.suggestion.create({
                 data: {
@@ -45,6 +65,10 @@ class SubmitFormController {
                     sifatPerbaikan,
                     userId,
                     statusIde: "DIAJUKAN",
+                    noRegistSS: noRegistSS || null,
+                    tanggalUsulan: parsedTanggalUsulan || null,
+                    hubungan: hubungan || null,
+                    tanggalEfektif: parsedTanggalEfektif || null,
                 },
                 include: {
                     user: {
@@ -63,6 +87,7 @@ class SubmitFormController {
                 data: {
                     suggestionId: suggestion.id,
                     statusIde: "DIAJUKAN",
+                    changedBy: userId,
                 },
             });
             return res.status(201).json({
@@ -84,17 +109,25 @@ class SubmitFormController {
         try {
             const { statusIde, department, userId, kriteriaSS } = req.query;
             const userDepartment = req.user?.department;
+            const userRole = req.user?.role;
+            const userPermissionLevel = req.user?.permissionLevel;
+            const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
             const whereCondition = {
                 ...(statusIde && { statusIde: statusIde }),
                 ...(userId && { userId: userId }),
                 ...(kriteriaSS && { kriteriaSS: kriteriaSS }),
             };
-            if (userDepartment && userDepartment !== "ALL_DEPT") {
+            if (!hasFullAccess && userDepartment && userDepartment !== "ALL_DEPT") {
                 whereCondition.user = {
                     department: userDepartment,
                 };
             }
-            else if (department) {
+            else if (department && !hasFullAccess) {
+                whereCondition.user = {
+                    department: department,
+                };
+            }
+            else if (department && hasFullAccess) {
                 whereCondition.user = {
                     department: department,
                 };
@@ -117,6 +150,16 @@ class SubmitFormController {
                     history: {
                         orderBy: {
                             changedAt: "desc",
+                        },
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    firstName: true,
+                                    lastName: true,
+                                    nrp: true,
+                                },
+                            },
                         },
                     },
                 },
@@ -166,6 +209,16 @@ class SubmitFormController {
                         orderBy: {
                             changedAt: "desc",
                         },
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    firstName: true,
+                                    lastName: true,
+                                    nrp: true,
+                                },
+                            },
+                        },
                     },
                 },
             });
@@ -175,7 +228,11 @@ class SubmitFormController {
                     message: "Suggestion not found",
                 });
             }
-            if (userDepartment &&
+            const userRole = req.user?.role;
+            const userPermissionLevel = req.user?.permissionLevel;
+            const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+            if (!hasFullAccess &&
+                userDepartment &&
                 userDepartment !== "ALL_DEPT" &&
                 suggestion.user.department !== userDepartment) {
                 return res.status(403).json({
@@ -224,7 +281,11 @@ class SubmitFormController {
                     message: "Suggestion not found",
                 });
             }
-            if (userDepartment &&
+            const userRole = req.user?.role;
+            const userPermissionLevel = req.user?.permissionLevel;
+            const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+            if (!hasFullAccess &&
+                userDepartment &&
                 userDepartment !== "ALL_DEPT" &&
                 existingSuggestion.user.department !== userDepartment) {
                 return res.status(403).json({
@@ -242,10 +303,18 @@ class SubmitFormController {
                     user: true,
                 },
             });
+            const changedByUserId = req.user?.id;
+            if (!changedByUserId) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Unauthorized: User not authenticated",
+                });
+            }
             await prisma.suggestionHistory.create({
                 data: {
                     suggestionId: id,
                     statusIde,
+                    changedBy: changedByUserId,
                 },
             });
             return res.status(200).json({
@@ -271,6 +340,24 @@ class SubmitFormController {
             delete updateData.id;
             delete updateData.userId;
             delete updateData.createdAt;
+            if (updateData.tanggalUsulan) {
+                const parsedDate = new Date(updateData.tanggalUsulan);
+                if (!isNaN(parsedDate.getTime())) {
+                    updateData.tanggalUsulan = parsedDate;
+                }
+                else {
+                    delete updateData.tanggalUsulan;
+                }
+            }
+            if (updateData.tanggalEfektif) {
+                const parsedDate = new Date(updateData.tanggalEfektif);
+                if (!isNaN(parsedDate.getTime())) {
+                    updateData.tanggalEfektif = parsedDate;
+                }
+                else {
+                    delete updateData.tanggalEfektif;
+                }
+            }
             const existingSuggestion = await prisma.suggestion.findUnique({
                 where: { id },
                 include: {
@@ -287,7 +374,11 @@ class SubmitFormController {
                     message: "Suggestion not found",
                 });
             }
-            if (userDepartment &&
+            const userRole = req.user?.role;
+            const userPermissionLevel = req.user?.permissionLevel;
+            const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+            if (!hasFullAccess &&
+                userDepartment &&
                 userDepartment !== "ALL_DEPT" &&
                 existingSuggestion.user.department !== userDepartment) {
                 return res.status(403).json({
@@ -337,7 +428,11 @@ class SubmitFormController {
                     message: "Suggestion not found",
                 });
             }
-            if (userDepartment &&
+            const userRole = req.user?.role;
+            const userPermissionLevel = req.user?.permissionLevel;
+            const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+            if (!hasFullAccess &&
+                userDepartment &&
                 userDepartment !== "ALL_DEPT" &&
                 existingSuggestion.user.department !== userDepartment) {
                 return res.status(403).json({
@@ -388,7 +483,11 @@ class SubmitFormController {
                     message: "Suggestion not found",
                 });
             }
-            if (userDepartment &&
+            const userRole = req.user?.role;
+            const userPermissionLevel = req.user?.permissionLevel;
+            const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+            if (!hasFullAccess &&
+                userDepartment &&
                 userDepartment !== "ALL_DEPT" &&
                 existingSuggestion.user.department !== userDepartment) {
                 return res.status(403).json({
@@ -411,12 +510,22 @@ class SubmitFormController {
                 where: { id: suggestionId },
                 data: { statusIde: "DINILAI" },
             });
-            await prisma.suggestionHistory.create({
-                data: {
+            const existingHistory = await prisma.suggestionHistory.findFirst({
+                where: {
                     suggestionId,
                     statusIde: "DINILAI",
                 },
             });
+            if (!existingHistory) {
+                const changedByUserId = req.user?.id;
+                await prisma.suggestionHistory.create({
+                    data: {
+                        suggestionId,
+                        statusIde: "DINILAI",
+                        changedBy: changedByUserId || null,
+                    },
+                });
+            }
             return res.status(201).json({
                 success: true,
                 message: "Penilaian submitted successfully",
@@ -439,12 +548,20 @@ class SubmitFormController {
             const whereCondition = {};
             if (userId)
                 whereCondition.userId = userId;
-            if (userDepartment && userDepartment !== "ALL_DEPT") {
+            const userRole = req.user?.role;
+            const userPermissionLevel = req.user?.permissionLevel;
+            const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+            if (!hasFullAccess && userDepartment && userDepartment !== "ALL_DEPT") {
                 whereCondition.user = {
                     department: userDepartment,
                 };
             }
-            else if (department) {
+            else if (department && !hasFullAccess) {
+                whereCondition.user = {
+                    department: department,
+                };
+            }
+            else if (department && hasFullAccess) {
                 whereCondition.user = {
                     department: department,
                 };
@@ -476,6 +593,106 @@ class SubmitFormController {
             return res.status(500).json({
                 success: false,
                 message: "Failed to fetch statistics",
+                error: error instanceof Error ? error.message : "Unknown error",
+            });
+        }
+    }
+    async submitMultiplePenilaian(req, res) {
+        try {
+            const { suggestionId, penilaianList } = req.body;
+            const userDepartment = req.user?.department;
+            const changedByUserId = req.user?.id;
+            if (!suggestionId || !Array.isArray(penilaianList) || penilaianList.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Missing required fields: suggestionId and penilaianList (array)",
+                });
+            }
+            for (const penilaian of penilaianList) {
+                if (!penilaian.penilaianKriteria || penilaian.skorKriteria === undefined) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Each penilaian must have penilaianKriteria and skorKriteria",
+                    });
+                }
+            }
+            const existingSuggestion = await prisma.suggestion.findUnique({
+                where: { id: suggestionId },
+                include: {
+                    user: {
+                        select: {
+                            department: true,
+                        },
+                    },
+                },
+            });
+            if (!existingSuggestion) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Suggestion not found",
+                });
+            }
+            const userRole = req.user?.role;
+            const userPermissionLevel = req.user?.permissionLevel;
+            const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+            if (!hasFullAccess &&
+                userDepartment &&
+                userDepartment !== "ALL_DEPT" &&
+                existingSuggestion.user.department !== userDepartment) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: You can only evaluate suggestions from your department",
+                });
+            }
+            await prisma.formPenilaian.deleteMany({
+                where: { suggestionId },
+            });
+            const createdPenilaian = await prisma.$transaction(penilaianList.map((penilaian) => prisma.formPenilaian.create({
+                data: {
+                    suggestionId,
+                    penilaianKriteria: penilaian.penilaianKriteria,
+                    skorKriteria: penilaian.skorKriteria,
+                    komentarPenilaian: penilaian.komentarPenilaian || null,
+                },
+            })));
+            await prisma.suggestion.update({
+                where: { id: suggestionId },
+                data: { statusIde: "DINILAI" },
+            });
+            const existingHistory = await prisma.suggestionHistory.findFirst({
+                where: {
+                    suggestionId,
+                    statusIde: "DINILAI",
+                },
+            });
+            if (!existingHistory) {
+                await prisma.suggestionHistory.create({
+                    data: {
+                        suggestionId,
+                        statusIde: "DINILAI",
+                        changedBy: changedByUserId || null,
+                    },
+                });
+            }
+            else if (existingHistory.changedBy !== changedByUserId) {
+                await prisma.suggestionHistory.update({
+                    where: { id: existingHistory.id },
+                    data: {
+                        changedBy: changedByUserId || null,
+                    },
+                });
+            }
+            return res.status(201).json({
+                success: true,
+                message: "All penilaian submitted successfully",
+                data: createdPenilaian,
+            });
+        }
+        catch (error) {
+            console.error("Error submitting multiple penilaian:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to submit penilaian",
                 error: error instanceof Error ? error.message : "Unknown error",
             });
         }

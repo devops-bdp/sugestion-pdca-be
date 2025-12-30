@@ -8,4 +8,5 @@ export declare class SubmitFormController {
     deleteSuggestion(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
     submitPenilaian(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
     getStatistics(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
+    submitMultiplePenilaian(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
 }

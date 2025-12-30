@@ -30,6 +30,10 @@ export class SubmitFormController {
         kriteriaSS,
         sifatPerbaikan,
         userId,
+        noRegistSS,
+        tanggalUsulan,
+        hubungan,
+        tanggalEfektif,
       } = req.body;
 
       // Validate required fields
@@ -50,6 +54,30 @@ export class SubmitFormController {
         });
       }
 
+      // Parse tanggalUsulan and tanggalEfektif if provided
+      let parsedTanggalUsulan: Date | undefined;
+      let parsedTanggalEfektif: Date | undefined;
+      
+      if (tanggalUsulan) {
+        parsedTanggalUsulan = new Date(tanggalUsulan);
+        if (isNaN(parsedTanggalUsulan.getTime())) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid tanggalUsulan format",
+          });
+        }
+      }
+      
+      if (tanggalEfektif) {
+        parsedTanggalEfektif = new Date(tanggalEfektif);
+        if (isNaN(parsedTanggalEfektif.getTime())) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid tanggalEfektif format",
+          });
+        }
+      }
+
       // Create suggestion
       const suggestion = await prisma.suggestion.create({
         data: {
@@ -66,6 +94,10 @@ export class SubmitFormController {
           sifatPerbaikan,
           userId,
           statusIde: "DIAJUKAN",
+          noRegistSS: noRegistSS || null,
+          tanggalUsulan: parsedTanggalUsulan || null,
+          hubungan: hubungan || null,
+          tanggalEfektif: parsedTanggalEfektif || null,
         },
         include: {
           user: {
@@ -81,11 +113,12 @@ export class SubmitFormController {
         },
       });
 
-      // Create history record
+      // Create history record with user who submitted
       await prisma.suggestionHistory.create({
         data: {
           suggestionId: suggestion.id,
           statusIde: "DIAJUKAN",
+          changedBy: userId, // User who submitted the suggestion
         },
       });
 
@@ -109,6 +142,11 @@ export class SubmitFormController {
     try {
       const { statusIde, department, userId, kriteriaSS } = req.query;
       const userDepartment = req.user?.department;
+      const userRole = req.user?.role;
+      const userPermissionLevel = req.user?.permissionLevel;
+
+      // Check if user has full access (Super Admin or FULL_ACCESS permission)
+      const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
 
       // Build where condition with department filtering
       const whereCondition: any = {
@@ -117,14 +155,19 @@ export class SubmitFormController {
         ...(kriteriaSS && { kriteriaSS: kriteriaSS as any }),
       };
 
-      // Department filtering: only show suggestions from same department (unless ALL_DEPT)
-      if (userDepartment && userDepartment !== "ALL_DEPT") {
+      // Department filtering: only show suggestions from same department (unless ALL_DEPT or has full access)
+      if (!hasFullAccess && userDepartment && userDepartment !== "ALL_DEPT") {
         // User can only see suggestions from their own department
         whereCondition.user = {
           department: userDepartment as any,
         };
-      } else if (department) {
+      } else if (department && !hasFullAccess) {
         // If user is ALL_DEPT, they can filter by any department
+        whereCondition.user = {
+          department: department as any,
+        };
+      } else if (department && hasFullAccess) {
+        // Super Admin or FULL_ACCESS can filter by department if specified
         whereCondition.user = {
           department: department as any,
         };
@@ -148,6 +191,16 @@ export class SubmitFormController {
           history: {
             orderBy: {
               changedAt: "desc",
+            },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  nrp: true,
+                },
+              },
             },
           },
         },
@@ -200,6 +253,16 @@ export class SubmitFormController {
             orderBy: {
               changedAt: "desc",
             },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  nrp: true,
+                },
+              },
+            },
           },
         },
       });
@@ -211,8 +274,13 @@ export class SubmitFormController {
         });
       }
 
-      // Check department access: user must be from same department or ALL_DEPT
+      // Check department access: user must be from same department, ALL_DEPT, or have full access
+      const userRole = req.user?.role;
+      const userPermissionLevel = req.user?.permissionLevel;
+      const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+
       if (
+        !hasFullAccess &&
         userDepartment &&
         userDepartment !== "ALL_DEPT" &&
         suggestion.user.department !== userDepartment
@@ -271,8 +339,13 @@ export class SubmitFormController {
         });
       }
 
-      // Check department access: user must be from same department or ALL_DEPT
+      // Check department access: user must be from same department, ALL_DEPT, or have full access
+      const userRole = req.user?.role;
+      const userPermissionLevel = req.user?.permissionLevel;
+      const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+
       if (
+        !hasFullAccess &&
         userDepartment &&
         userDepartment !== "ALL_DEPT" &&
         existingSuggestion.user.department !== userDepartment
@@ -294,11 +367,20 @@ export class SubmitFormController {
         },
       });
 
-      // Create history record
+      // Create history record with user who made the change
+      const changedByUserId = req.user?.id;
+      if (!changedByUserId) {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized: User not authenticated",
+        });
+      }
+
       await prisma.suggestionHistory.create({
         data: {
           suggestionId: id,
           statusIde,
+          changedBy: changedByUserId, // User who approved/evaluated
         },
       });
 
@@ -329,6 +411,25 @@ export class SubmitFormController {
       delete updateData.userId;
       delete updateData.createdAt;
 
+      // Parse tanggalUsulan and tanggalEfektif if provided
+      if (updateData.tanggalUsulan) {
+        const parsedDate = new Date(updateData.tanggalUsulan);
+        if (!isNaN(parsedDate.getTime())) {
+          updateData.tanggalUsulan = parsedDate;
+        } else {
+          delete updateData.tanggalUsulan;
+        }
+      }
+      
+      if (updateData.tanggalEfektif) {
+        const parsedDate = new Date(updateData.tanggalEfektif);
+        if (!isNaN(parsedDate.getTime())) {
+          updateData.tanggalEfektif = parsedDate;
+        } else {
+          delete updateData.tanggalEfektif;
+        }
+      }
+
       // Check if suggestion exists and get user department
       const existingSuggestion = await prisma.suggestion.findUnique({
         where: { id },
@@ -348,8 +449,13 @@ export class SubmitFormController {
         });
       }
 
-      // Check department access: user must be from same department or ALL_DEPT
+      // Check department access: user must be from same department, ALL_DEPT, or have full access
+      const userRole = req.user?.role;
+      const userPermissionLevel = req.user?.permissionLevel;
+      const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+
       if (
+        !hasFullAccess &&
         userDepartment &&
         userDepartment !== "ALL_DEPT" &&
         existingSuggestion.user.department !== userDepartment
@@ -408,8 +514,13 @@ export class SubmitFormController {
         });
       }
 
-      // Check department access: user must be from same department or ALL_DEPT
+      // Check department access: user must be from same department, ALL_DEPT, or have full access
+      const userRole = req.user?.role;
+      const userPermissionLevel = req.user?.permissionLevel;
+      const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+
       if (
+        !hasFullAccess &&
         userDepartment &&
         userDepartment !== "ALL_DEPT" &&
         existingSuggestion.user.department !== userDepartment
@@ -475,8 +586,13 @@ export class SubmitFormController {
         });
       }
 
-      // Check department access: user must be from same department or ALL_DEPT
+      // Check department access: user must be from same department, ALL_DEPT, or have full access
+      const userRole = req.user?.role;
+      const userPermissionLevel = req.user?.permissionLevel;
+      const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+
       if (
+        !hasFullAccess &&
         userDepartment &&
         userDepartment !== "ALL_DEPT" &&
         existingSuggestion.user.department !== userDepartment
@@ -505,13 +621,25 @@ export class SubmitFormController {
         data: { statusIde: "DINILAI" },
       });
 
-      // Create history record
-      await prisma.suggestionHistory.create({
-        data: {
+      // Check if history with DINILAI status already exists for this suggestion
+      const existingHistory = await prisma.suggestionHistory.findFirst({
+        where: {
           suggestionId,
           statusIde: "DINILAI",
         },
       });
+
+      // Only create history if it doesn't exist yet
+      if (!existingHistory) {
+        const changedByUserId = req.user?.id;
+        await prisma.suggestionHistory.create({
+          data: {
+            suggestionId,
+            statusIde: "DINILAI",
+            changedBy: changedByUserId || null,
+          },
+        });
+      }
 
       return res.status(201).json({
         success: true,
@@ -537,14 +665,24 @@ export class SubmitFormController {
       const whereCondition: any = {};
       if (userId) whereCondition.userId = userId;
 
-      // Department filtering: only show statistics from same department (unless ALL_DEPT)
-      if (userDepartment && userDepartment !== "ALL_DEPT") {
+      // Check if user has full access (Super Admin or FULL_ACCESS permission)
+      const userRole = req.user?.role;
+      const userPermissionLevel = req.user?.permissionLevel;
+      const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+
+      // Department filtering: only show statistics from same department (unless ALL_DEPT or has full access)
+      if (!hasFullAccess && userDepartment && userDepartment !== "ALL_DEPT") {
         // User can only see statistics from their own department
         whereCondition.user = {
           department: userDepartment as any,
         };
-      } else if (department) {
+      } else if (department && !hasFullAccess) {
         // If user is ALL_DEPT, they can filter by any department
+        whereCondition.user = {
+          department: department as any,
+        };
+      } else if (department && hasFullAccess) {
+        // Super Admin or FULL_ACCESS can filter by department if specified
         whereCondition.user = {
           department: department as any,
         };
@@ -577,6 +715,133 @@ export class SubmitFormController {
       return res.status(500).json({
         success: false,
         message: "Failed to fetch statistics",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+
+  // Submit multiple penilaian at once (for scoring completion)
+  async submitMultiplePenilaian(req: Request, res: Response) {
+    try {
+      const { suggestionId, penilaianList } = req.body;
+      const userDepartment = req.user?.department;
+      const changedByUserId = req.user?.id;
+
+      if (!suggestionId || !Array.isArray(penilaianList) || penilaianList.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required fields: suggestionId and penilaianList (array)",
+        });
+      }
+
+      // Validate each penilaian item
+      for (const penilaian of penilaianList) {
+        if (!penilaian.penilaianKriteria || penilaian.skorKriteria === undefined) {
+          return res.status(400).json({
+            success: false,
+            message: "Each penilaian must have penilaianKriteria and skorKriteria",
+          });
+        }
+      }
+
+      // Check if suggestion exists and get user department
+      const existingSuggestion = await prisma.suggestion.findUnique({
+        where: { id: suggestionId },
+        include: {
+          user: {
+            select: {
+              department: true,
+            },
+          },
+        },
+      });
+
+      if (!existingSuggestion) {
+        return res.status(404).json({
+          success: false,
+          message: "Suggestion not found",
+        });
+      }
+
+      // Check department access: user must be from same department, ALL_DEPT, or have full access
+      const userRole = req.user?.role;
+      const userPermissionLevel = req.user?.permissionLevel;
+      const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+
+      if (
+        !hasFullAccess &&
+        userDepartment &&
+        userDepartment !== "ALL_DEPT" &&
+        existingSuggestion.user.department !== userDepartment
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden: You can only evaluate suggestions from your department",
+        });
+      }
+
+      // Delete existing penilaian for this suggestion to avoid duplicates
+      await prisma.formPenilaian.deleteMany({
+        where: { suggestionId },
+      });
+
+      // Create all penilaian records
+      const createdPenilaian = await prisma.$transaction(
+        penilaianList.map((penilaian) =>
+          prisma.formPenilaian.create({
+            data: {
+              suggestionId,
+              penilaianKriteria: penilaian.penilaianKriteria,
+              skorKriteria: penilaian.skorKriteria,
+              komentarPenilaian: penilaian.komentarPenilaian || null,
+            },
+          })
+        )
+      );
+
+      // Update suggestion status to DINILAI
+      await prisma.suggestion.update({
+        where: { id: suggestionId },
+        data: { statusIde: "DINILAI" },
+      });
+
+      // Check if history with DINILAI status already exists for this suggestion
+      const existingHistory = await prisma.suggestionHistory.findFirst({
+        where: {
+          suggestionId,
+          statusIde: "DINILAI",
+        },
+      });
+
+      // Only create history if it doesn't exist yet, or update existing one
+      if (!existingHistory) {
+        await prisma.suggestionHistory.create({
+          data: {
+            suggestionId,
+            statusIde: "DINILAI",
+            changedBy: changedByUserId || null,
+          },
+        });
+      } else if (existingHistory.changedBy !== changedByUserId) {
+        // Update changedBy if different user is submitting
+        await prisma.suggestionHistory.update({
+          where: { id: existingHistory.id },
+          data: {
+            changedBy: changedByUserId || null,
+          },
+        });
+      }
+
+      return res.status(201).json({
+        success: true,
+        message: "All penilaian submitted successfully",
+        data: createdPenilaian,
+      });
+    } catch (error) {
+      console.error("Error submitting multiple penilaian:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to submit penilaian",
         error: error instanceof Error ? error.message : "Unknown error",
       });
     }

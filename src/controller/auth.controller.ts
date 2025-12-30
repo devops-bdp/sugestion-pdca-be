@@ -56,12 +56,24 @@ export class AuthController {
       }
       const salt = await genSalt(10);
       const hashedPassword = await hash(password, salt);
+      
+      // Auto-set permissionLevel based on role
+      // Staff and Non_Staff always get SUBMITTER permission
+      let defaultPermissionLevel = "SUBMITTER";
+      if (role === "Staff" || role === "Non_Staff") {
+        defaultPermissionLevel = "SUBMITTER";
+      }
+      // If permissionLevel is provided in request, use it (for other roles)
+      // Otherwise use default
+      const permissionLevel = req.body.permissionLevel || defaultPermissionLevel;
+      
       const newUser = await prisma.user.create({
         data: {
           firstName,
           lastName,
           nrp: BigInt(nrp),
           role,
+          permissionLevel: permissionLevel as any,
           department,
           position,
           password: hashedPassword,
@@ -72,6 +84,7 @@ export class AuthController {
           lastName: true,
           nrp: true,
           role: true,
+          permissionLevel: true,
           department: true,
           position: true,
           createdAt: true,
@@ -134,6 +147,7 @@ export class AuthController {
           nrp: user.nrp,
           name: `${user.firstName} ${user.lastName}`,
           role: user.role,
+          permissionLevel: user.permissionLevel,
           department: user.department,
           position: user.position,
         },

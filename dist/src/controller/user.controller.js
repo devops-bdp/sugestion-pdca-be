@@ -31,6 +31,7 @@ class UserController {
                     lastName: true,
                     nrp: true,
                     role: true,
+                    permissionLevel: true,
                     department: true,
                     position: true,
                     createdAt: true,
@@ -85,6 +86,7 @@ class UserController {
                     lastName: true,
                     nrp: true,
                     role: true,
+                    permissionLevel: true,
                     department: true,
                     position: true,
                     createdAt: true,
@@ -261,7 +263,7 @@ class UserController {
     async updateUserProfile(req, res) {
         try {
             const { id } = req.params;
-            const { firstName, lastName, role, department, position } = req.body;
+            const { firstName, lastName, role, department, position, permissionLevel } = req.body;
             const existingUser = await prisma.user.findUnique({
                 where: { id },
             });
@@ -271,6 +273,14 @@ class UserController {
                     message: "User not found",
                 });
             }
+            let finalPermissionLevel = permissionLevel;
+            const targetRole = role || existingUser.role;
+            if (targetRole === "Staff" || targetRole === "Non_Staff") {
+                finalPermissionLevel = "SUBMITTER";
+            }
+            else if (!permissionLevel) {
+                finalPermissionLevel = existingUser.permissionLevel;
+            }
             const updatedUser = await prisma.user.update({
                 where: { id },
                 data: {
@@ -279,6 +289,7 @@ class UserController {
                     ...(role && { role }),
                     ...(department && { department }),
                     ...(position && { position }),
+                    ...(finalPermissionLevel && { permissionLevel: finalPermissionLevel }),
                 },
                 select: {
                     id: true,
@@ -286,6 +297,7 @@ class UserController {
                     lastName: true,
                     nrp: true,
                     role: true,
+                    permissionLevel: true,
                     department: true,
                     position: true,
                     updatedAt: true,

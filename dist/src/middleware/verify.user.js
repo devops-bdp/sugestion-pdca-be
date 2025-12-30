@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyDepartment = exports.verifyRole = exports.verifyUser = void 0;
+exports.verifyDepartment = exports.verifyPermissionLevel = exports.verifyRole = exports.verifyUser = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
 const client_1 = require("../../prisma/generated/prisma/client");
 const adapter_pg_1 = require("@prisma/adapter-pg");
@@ -44,6 +44,7 @@ const verifyUser = async (req, res, next) => {
                 lastName: true,
                 nrp: true,
                 role: true,
+                permissionLevel: true,
                 department: true,
                 position: true,
             },
@@ -58,6 +59,7 @@ const verifyUser = async (req, res, next) => {
             id: decoded.id,
             nrp: decoded.nrp,
             role: decoded.role,
+            permissionLevel: user.permissionLevel,
             department: decoded.department,
             position: decoded.position,
         };
@@ -104,6 +106,33 @@ const verifyRole = (...allowedRoles) => {
     };
 };
 exports.verifyRole = verifyRole;
+const verifyPermissionLevel = (...allowedPermissionLevels) => {
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized",
+            });
+        }
+        if (!req.user.permissionLevel) {
+            return res.status(403).json({
+                success: false,
+                message: "Forbidden: No permission level assigned",
+            });
+        }
+        if (req.user.permissionLevel === "FULL_ACCESS") {
+            return next();
+        }
+        if (!allowedPermissionLevels.includes(req.user.permissionLevel)) {
+            return res.status(403).json({
+                success: false,
+                message: "Forbidden: Insufficient permission level",
+            });
+        }
+        next();
+    };
+};
+exports.verifyPermissionLevel = verifyPermissionLevel;
 const verifyDepartment = (...allowedDepartments) => {
     return (req, res, next) => {
         if (!req.user) {

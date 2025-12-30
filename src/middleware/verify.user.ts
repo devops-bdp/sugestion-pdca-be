@@ -22,6 +22,7 @@ declare global {
         id: string;
         nrp: string;
         role: string;
+        permissionLevel: string;
         department: string;
         position: string;
       };
@@ -68,11 +69,12 @@ export const verifyUser = async (
       id: string;
       nrp: string;
       role: string;
+      permissionLevel?: string;
       department: string;
       position: string;
     };
 
-    // Optional: Check if user still exists in database
+    // Optional: Check if user still exists in database and get latest permissionLevel
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
       select: {
@@ -81,6 +83,7 @@ export const verifyUser = async (
         lastName: true,
         nrp: true,
         role: true,
+        permissionLevel: true,
         department: true,
         position: true,
       },
@@ -93,11 +96,12 @@ export const verifyUser = async (
       });
     }
 
-    // Attach user info to request
+    // Attach user info to request (use permissionLevel from database, not token, to ensure it's up-to-date)
     req.user = {
       id: decoded.id,
       nrp: decoded.nrp,
       role: decoded.role,
+      permissionLevel: user.permissionLevel,
       department: decoded.department,
       position: decoded.position,
     };
@@ -127,7 +131,7 @@ export const verifyUser = async (
   }
 };
 
-// Middleware to check specific roles
+// Middleware to check specific roles (DEPRECATED - use verifyPermissionLevel instead)
 export const verifyRole = (...allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
@@ -141,6 +145,39 @@ export const verifyRole = (...allowedRoles: string[]) => {
       return res.status(403).json({
         success: false,
         message: "Forbidden: Insufficient permissions",
+      });
+    }
+
+    next();
+  };
+};
+
+// Middleware to check permission levels (NEW - use this instead of verifyRole)
+export const verifyPermissionLevel = (...allowedPermissionLevels: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    if (!req.user.permissionLevel) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden: No permission level assigned",
+      });
+    }
+
+    // FULL_ACCESS has access to everything
+    if (req.user.permissionLevel === "FULL_ACCESS") {
+      return next();
+    }
+
+    if (!allowedPermissionLevels.includes(req.user.permissionLevel)) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden: Insufficient permission level",
       });
     }
 

@@ -70,7 +70,6 @@ app.get("/api-docs", (req, res) => {
         docExpansion: "none",
         filter: true,
         showRequestHeaders: true,
-
         tryItOutEnabled: true
       });
     };
@@ -84,7 +83,6 @@ app.get("/api-docs.json", (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.send(swagger_1.swaggerSpec);
 });
-
 const authRouter = new auth_router_1.AuthRouter();
 const userRouter = new user_router_1.UserRouter();
 const submitFormRouter = new submit_form_router_1.SubmitFormRouter();

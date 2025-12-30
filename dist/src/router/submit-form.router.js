@@ -14,6 +14,7 @@ class SubmitFormRouter {
         this.router.post("/", verify_user_1.verifyUser, this.submitFormController.createSuggestion.bind(this.submitFormController));
         this.router.get("/", verify_user_1.verifyUser, this.submitFormController.getAllSuggestions.bind(this.submitFormController));
         this.router.post("/penilaian", verify_user_1.verifyUser, (0, verify_user_1.verifyRole)("Super_Admin", "Dept_Head", "Project_Manager", "Supervisor", "Group_Leader"), this.submitFormController.submitPenilaian.bind(this.submitFormController));
+        this.router.post("/penilaian/multiple", verify_user_1.verifyUser, (0, verify_user_1.verifyRole)("Super_Admin", "Dept_Head", "Project_Manager", "Supervisor", "Group_Leader"), this.submitFormController.submitMultiplePenilaian.bind(this.submitFormController));
         this.router.get("/statistics", verify_user_1.verifyUser, this.submitFormController.getStatistics.bind(this.submitFormController));
         this.router.get("/:id", verify_user_1.verifyUser, this.submitFormController.getSuggestionById.bind(this.submitFormController));
         this.router.put("/:id/status", verify_user_1.verifyUser, (0, verify_user_1.verifyRole)("Super_Admin", "Dept_Head", "Project_Manager", "Supervisor", "Group_Leader"), this.submitFormController.updateSuggestionStatus.bind(this.submitFormController));

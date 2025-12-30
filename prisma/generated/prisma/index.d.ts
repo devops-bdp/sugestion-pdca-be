@@ -1259,10 +1259,12 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     suggestions: number
+    suggestionHistory: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     suggestions?: boolean | UserCountOutputTypeCountSuggestionsArgs
+    suggestionHistory?: boolean | UserCountOutputTypeCountSuggestionHistoryArgs
   }
 
   // Custom InputTypes
@@ -1281,6 +1283,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSuggestionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SuggestionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSuggestionHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SuggestionHistoryWhereInput
   }
 
 
@@ -1575,6 +1584,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     suggestions?: boolean | User$suggestionsArgs<ExtArgs>
+    suggestionHistory?: boolean | User$suggestionHistoryArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1623,6 +1633,7 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "nrp" | "role" | "permissionLevel" | "department" | "position" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     suggestions?: boolean | User$suggestionsArgs<ExtArgs>
+    suggestionHistory?: boolean | User$suggestionHistoryArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1632,6 +1643,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       suggestions: Prisma.$SuggestionPayload<ExtArgs>[]
+      suggestionHistory: Prisma.$SuggestionHistoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2040,6 +2052,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     suggestions<T extends User$suggestionsArgs<ExtArgs> = {}>(args?: Subset<T, User$suggestionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SuggestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    suggestionHistory<T extends User$suggestionHistoryArgs<ExtArgs> = {}>(args?: Subset<T, User$suggestionHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SuggestionHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2492,6 +2505,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.suggestionHistory
+   */
+  export type User$suggestionHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuggestionHistory
+     */
+    select?: SuggestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuggestionHistory
+     */
+    omit?: SuggestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SuggestionHistoryInclude<ExtArgs> | null
+    where?: SuggestionHistoryWhereInput
+    orderBy?: SuggestionHistoryOrderByWithRelationInput | SuggestionHistoryOrderByWithRelationInput[]
+    cursor?: SuggestionHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SuggestionHistoryScalarFieldEnum | SuggestionHistoryScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2534,6 +2571,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS | null
     sifatPerbaikan: $Enums.SifatPerbaikan | null
     statusIde: $Enums.StatusIde | null
+    noRegistSS: string | null
+    tanggalUsulan: Date | null
+    hubungan: string | null
+    tanggalEfektif: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
@@ -2553,6 +2594,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS | null
     sifatPerbaikan: $Enums.SifatPerbaikan | null
     statusIde: $Enums.StatusIde | null
+    noRegistSS: string | null
+    tanggalUsulan: Date | null
+    hubungan: string | null
+    tanggalEfektif: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
@@ -2572,6 +2617,10 @@ export namespace Prisma {
     kriteriaSS: number
     sifatPerbaikan: number
     statusIde: number
+    noRegistSS: number
+    tanggalUsulan: number
+    hubungan: number
+    tanggalEfektif: number
     createdAt: number
     updatedAt: number
     userId: number
@@ -2593,6 +2642,10 @@ export namespace Prisma {
     kriteriaSS?: true
     sifatPerbaikan?: true
     statusIde?: true
+    noRegistSS?: true
+    tanggalUsulan?: true
+    hubungan?: true
+    tanggalEfektif?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -2612,6 +2665,10 @@ export namespace Prisma {
     kriteriaSS?: true
     sifatPerbaikan?: true
     statusIde?: true
+    noRegistSS?: true
+    tanggalUsulan?: true
+    hubungan?: true
+    tanggalEfektif?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -2631,6 +2688,10 @@ export namespace Prisma {
     kriteriaSS?: true
     sifatPerbaikan?: true
     statusIde?: true
+    noRegistSS?: true
+    tanggalUsulan?: true
+    hubungan?: true
+    tanggalEfektif?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -2723,6 +2784,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS
     sifatPerbaikan: $Enums.SifatPerbaikan
     statusIde: $Enums.StatusIde
+    noRegistSS: string | null
+    tanggalUsulan: Date | null
+    hubungan: string | null
+    tanggalEfektif: Date | null
     createdAt: Date
     updatedAt: Date
     userId: string
@@ -2759,6 +2824,10 @@ export namespace Prisma {
     kriteriaSS?: boolean
     sifatPerbaikan?: boolean
     statusIde?: boolean
+    noRegistSS?: boolean
+    tanggalUsulan?: boolean
+    hubungan?: boolean
+    tanggalEfektif?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -2782,6 +2851,10 @@ export namespace Prisma {
     kriteriaSS?: boolean
     sifatPerbaikan?: boolean
     statusIde?: boolean
+    noRegistSS?: boolean
+    tanggalUsulan?: boolean
+    hubungan?: boolean
+    tanggalEfektif?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -2802,6 +2875,10 @@ export namespace Prisma {
     kriteriaSS?: boolean
     sifatPerbaikan?: boolean
     statusIde?: boolean
+    noRegistSS?: boolean
+    tanggalUsulan?: boolean
+    hubungan?: boolean
+    tanggalEfektif?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -2822,12 +2899,16 @@ export namespace Prisma {
     kriteriaSS?: boolean
     sifatPerbaikan?: boolean
     statusIde?: boolean
+    noRegistSS?: boolean
+    tanggalUsulan?: boolean
+    hubungan?: boolean
+    tanggalEfektif?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
   }
 
-  export type SuggestionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "judulIde" | "masalahYangDihadapi" | "uraianIde" | "ideProsesPerbaikan" | "hasilUraianProses" | "evaluasiIde" | "komentarAtasan" | "fotoSebelum" | "fotoSesudah" | "kriteriaSS" | "sifatPerbaikan" | "statusIde" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["suggestion"]>
+  export type SuggestionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "judulIde" | "masalahYangDihadapi" | "uraianIde" | "ideProsesPerbaikan" | "hasilUraianProses" | "evaluasiIde" | "komentarAtasan" | "fotoSebelum" | "fotoSesudah" | "kriteriaSS" | "sifatPerbaikan" | "statusIde" | "noRegistSS" | "tanggalUsulan" | "hubungan" | "tanggalEfektif" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["suggestion"]>
   export type SuggestionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     history?: boolean | Suggestion$historyArgs<ExtArgs>
@@ -2862,6 +2943,10 @@ export namespace Prisma {
       kriteriaSS: $Enums.KriteriaSS
       sifatPerbaikan: $Enums.SifatPerbaikan
       statusIde: $Enums.StatusIde
+      noRegistSS: string | null
+      tanggalUsulan: Date | null
+      hubungan: string | null
+      tanggalEfektif: Date | null
       createdAt: Date
       updatedAt: Date
       userId: string
@@ -3304,6 +3389,10 @@ export namespace Prisma {
     readonly kriteriaSS: FieldRef<"Suggestion", 'KriteriaSS'>
     readonly sifatPerbaikan: FieldRef<"Suggestion", 'SifatPerbaikan'>
     readonly statusIde: FieldRef<"Suggestion", 'StatusIde'>
+    readonly noRegistSS: FieldRef<"Suggestion", 'String'>
+    readonly tanggalUsulan: FieldRef<"Suggestion", 'DateTime'>
+    readonly hubungan: FieldRef<"Suggestion", 'String'>
+    readonly tanggalEfektif: FieldRef<"Suggestion", 'DateTime'>
     readonly createdAt: FieldRef<"Suggestion", 'DateTime'>
     readonly updatedAt: FieldRef<"Suggestion", 'DateTime'>
     readonly userId: FieldRef<"Suggestion", 'String'>
@@ -3784,6 +3873,7 @@ export namespace Prisma {
     suggestionId: string | null
     statusIde: $Enums.StatusIde | null
     changedAt: Date | null
+    changedBy: string | null
   }
 
   export type SuggestionHistoryMaxAggregateOutputType = {
@@ -3791,6 +3881,7 @@ export namespace Prisma {
     suggestionId: string | null
     statusIde: $Enums.StatusIde | null
     changedAt: Date | null
+    changedBy: string | null
   }
 
   export type SuggestionHistoryCountAggregateOutputType = {
@@ -3798,6 +3889,7 @@ export namespace Prisma {
     suggestionId: number
     statusIde: number
     changedAt: number
+    changedBy: number
     _all: number
   }
 
@@ -3807,6 +3899,7 @@ export namespace Prisma {
     suggestionId?: true
     statusIde?: true
     changedAt?: true
+    changedBy?: true
   }
 
   export type SuggestionHistoryMaxAggregateInputType = {
@@ -3814,6 +3907,7 @@ export namespace Prisma {
     suggestionId?: true
     statusIde?: true
     changedAt?: true
+    changedBy?: true
   }
 
   export type SuggestionHistoryCountAggregateInputType = {
@@ -3821,6 +3915,7 @@ export namespace Prisma {
     suggestionId?: true
     statusIde?: true
     changedAt?: true
+    changedBy?: true
     _all?: true
   }
 
@@ -3901,6 +3996,7 @@ export namespace Prisma {
     suggestionId: string
     statusIde: $Enums.StatusIde
     changedAt: Date
+    changedBy: string | null
     _count: SuggestionHistoryCountAggregateOutputType | null
     _min: SuggestionHistoryMinAggregateOutputType | null
     _max: SuggestionHistoryMaxAggregateOutputType | null
@@ -3925,7 +4021,9 @@ export namespace Prisma {
     suggestionId?: boolean
     statusIde?: boolean
     changedAt?: boolean
+    changedBy?: boolean
     suggestion?: boolean | SuggestionDefaultArgs<ExtArgs>
+    user?: boolean | SuggestionHistory$userArgs<ExtArgs>
   }, ExtArgs["result"]["suggestionHistory"]>
 
   export type SuggestionHistorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3933,7 +4031,9 @@ export namespace Prisma {
     suggestionId?: boolean
     statusIde?: boolean
     changedAt?: boolean
+    changedBy?: boolean
     suggestion?: boolean | SuggestionDefaultArgs<ExtArgs>
+    user?: boolean | SuggestionHistory$userArgs<ExtArgs>
   }, ExtArgs["result"]["suggestionHistory"]>
 
   export type SuggestionHistorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3941,7 +4041,9 @@ export namespace Prisma {
     suggestionId?: boolean
     statusIde?: boolean
     changedAt?: boolean
+    changedBy?: boolean
     suggestion?: boolean | SuggestionDefaultArgs<ExtArgs>
+    user?: boolean | SuggestionHistory$userArgs<ExtArgs>
   }, ExtArgs["result"]["suggestionHistory"]>
 
   export type SuggestionHistorySelectScalar = {
@@ -3949,29 +4051,35 @@ export namespace Prisma {
     suggestionId?: boolean
     statusIde?: boolean
     changedAt?: boolean
+    changedBy?: boolean
   }
 
-  export type SuggestionHistoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "suggestionId" | "statusIde" | "changedAt", ExtArgs["result"]["suggestionHistory"]>
+  export type SuggestionHistoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "suggestionId" | "statusIde" | "changedAt" | "changedBy", ExtArgs["result"]["suggestionHistory"]>
   export type SuggestionHistoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     suggestion?: boolean | SuggestionDefaultArgs<ExtArgs>
+    user?: boolean | SuggestionHistory$userArgs<ExtArgs>
   }
   export type SuggestionHistoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     suggestion?: boolean | SuggestionDefaultArgs<ExtArgs>
+    user?: boolean | SuggestionHistory$userArgs<ExtArgs>
   }
   export type SuggestionHistoryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     suggestion?: boolean | SuggestionDefaultArgs<ExtArgs>
+    user?: boolean | SuggestionHistory$userArgs<ExtArgs>
   }
 
   export type $SuggestionHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SuggestionHistory"
     objects: {
       suggestion: Prisma.$SuggestionPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       suggestionId: string
       statusIde: $Enums.StatusIde
       changedAt: Date
+      changedBy: string | null
     }, ExtArgs["result"]["suggestionHistory"]>
     composites: {}
   }
@@ -4367,6 +4475,7 @@ export namespace Prisma {
   export interface Prisma__SuggestionHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     suggestion<T extends SuggestionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SuggestionDefaultArgs<ExtArgs>>): Prisma__SuggestionClient<$Result.GetResult<Prisma.$SuggestionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends SuggestionHistory$userArgs<ExtArgs> = {}>(args?: Subset<T, SuggestionHistory$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4400,6 +4509,7 @@ export namespace Prisma {
     readonly suggestionId: FieldRef<"SuggestionHistory", 'String'>
     readonly statusIde: FieldRef<"SuggestionHistory", 'StatusIde'>
     readonly changedAt: FieldRef<"SuggestionHistory", 'DateTime'>
+    readonly changedBy: FieldRef<"SuggestionHistory", 'String'>
   }
     
 
@@ -4793,6 +4903,25 @@ export namespace Prisma {
      * Limit how many SuggestionHistories to delete.
      */
     limit?: number
+  }
+
+  /**
+   * SuggestionHistory.user
+   */
+  export type SuggestionHistory$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -5977,6 +6106,10 @@ export namespace Prisma {
     kriteriaSS: 'kriteriaSS',
     sifatPerbaikan: 'sifatPerbaikan',
     statusIde: 'statusIde',
+    noRegistSS: 'noRegistSS',
+    tanggalUsulan: 'tanggalUsulan',
+    hubungan: 'hubungan',
+    tanggalEfektif: 'tanggalEfektif',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     userId: 'userId'
@@ -5989,7 +6122,8 @@ export namespace Prisma {
     id: 'id',
     suggestionId: 'suggestionId',
     statusIde: 'statusIde',
-    changedAt: 'changedAt'
+    changedAt: 'changedAt',
+    changedBy: 'changedBy'
   };
 
   export type SuggestionHistoryScalarFieldEnum = (typeof SuggestionHistoryScalarFieldEnum)[keyof typeof SuggestionHistoryScalarFieldEnum]
@@ -6224,6 +6358,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     suggestions?: SuggestionListRelationFilter
+    suggestionHistory?: SuggestionHistoryListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -6239,6 +6374,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     suggestions?: SuggestionOrderByRelationAggregateInput
+    suggestionHistory?: SuggestionHistoryOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -6257,6 +6393,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     suggestions?: SuggestionListRelationFilter
+    suggestionHistory?: SuggestionHistoryListRelationFilter
   }, "id" | "nrp">
 
   export type UserOrderByWithAggregationInput = {
@@ -6312,6 +6449,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFilter<"Suggestion"> | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFilter<"Suggestion"> | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFilter<"Suggestion"> | $Enums.StatusIde
+    noRegistSS?: StringNullableFilter<"Suggestion"> | string | null
+    tanggalUsulan?: DateTimeNullableFilter<"Suggestion"> | Date | string | null
+    hubungan?: StringNullableFilter<"Suggestion"> | string | null
+    tanggalEfektif?: DateTimeNullableFilter<"Suggestion"> | Date | string | null
     createdAt?: DateTimeFilter<"Suggestion"> | Date | string
     updatedAt?: DateTimeFilter<"Suggestion"> | Date | string
     userId?: StringFilter<"Suggestion"> | string
@@ -6334,6 +6475,10 @@ export namespace Prisma {
     kriteriaSS?: SortOrder
     sifatPerbaikan?: SortOrder
     statusIde?: SortOrder
+    noRegistSS?: SortOrderInput | SortOrder
+    tanggalUsulan?: SortOrderInput | SortOrder
+    hubungan?: SortOrderInput | SortOrder
+    tanggalEfektif?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -6359,6 +6504,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFilter<"Suggestion"> | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFilter<"Suggestion"> | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFilter<"Suggestion"> | $Enums.StatusIde
+    noRegistSS?: StringNullableFilter<"Suggestion"> | string | null
+    tanggalUsulan?: DateTimeNullableFilter<"Suggestion"> | Date | string | null
+    hubungan?: StringNullableFilter<"Suggestion"> | string | null
+    tanggalEfektif?: DateTimeNullableFilter<"Suggestion"> | Date | string | null
     createdAt?: DateTimeFilter<"Suggestion"> | Date | string
     updatedAt?: DateTimeFilter<"Suggestion"> | Date | string
     userId?: StringFilter<"Suggestion"> | string
@@ -6381,6 +6530,10 @@ export namespace Prisma {
     kriteriaSS?: SortOrder
     sifatPerbaikan?: SortOrder
     statusIde?: SortOrder
+    noRegistSS?: SortOrderInput | SortOrder
+    tanggalUsulan?: SortOrderInput | SortOrder
+    hubungan?: SortOrderInput | SortOrder
+    tanggalEfektif?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -6406,6 +6559,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSWithAggregatesFilter<"Suggestion"> | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanWithAggregatesFilter<"Suggestion"> | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeWithAggregatesFilter<"Suggestion"> | $Enums.StatusIde
+    noRegistSS?: StringNullableWithAggregatesFilter<"Suggestion"> | string | null
+    tanggalUsulan?: DateTimeNullableWithAggregatesFilter<"Suggestion"> | Date | string | null
+    hubungan?: StringNullableWithAggregatesFilter<"Suggestion"> | string | null
+    tanggalEfektif?: DateTimeNullableWithAggregatesFilter<"Suggestion"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Suggestion"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Suggestion"> | Date | string
     userId?: StringWithAggregatesFilter<"Suggestion"> | string
@@ -6419,7 +6576,9 @@ export namespace Prisma {
     suggestionId?: StringFilter<"SuggestionHistory"> | string
     statusIde?: EnumStatusIdeFilter<"SuggestionHistory"> | $Enums.StatusIde
     changedAt?: DateTimeFilter<"SuggestionHistory"> | Date | string
+    changedBy?: StringNullableFilter<"SuggestionHistory"> | string | null
     suggestion?: XOR<SuggestionScalarRelationFilter, SuggestionWhereInput>
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type SuggestionHistoryOrderByWithRelationInput = {
@@ -6427,7 +6586,9 @@ export namespace Prisma {
     suggestionId?: SortOrder
     statusIde?: SortOrder
     changedAt?: SortOrder
+    changedBy?: SortOrderInput | SortOrder
     suggestion?: SuggestionOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type SuggestionHistoryWhereUniqueInput = Prisma.AtLeast<{
@@ -6438,7 +6599,9 @@ export namespace Prisma {
     suggestionId?: StringFilter<"SuggestionHistory"> | string
     statusIde?: EnumStatusIdeFilter<"SuggestionHistory"> | $Enums.StatusIde
     changedAt?: DateTimeFilter<"SuggestionHistory"> | Date | string
+    changedBy?: StringNullableFilter<"SuggestionHistory"> | string | null
     suggestion?: XOR<SuggestionScalarRelationFilter, SuggestionWhereInput>
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type SuggestionHistoryOrderByWithAggregationInput = {
@@ -6446,6 +6609,7 @@ export namespace Prisma {
     suggestionId?: SortOrder
     statusIde?: SortOrder
     changedAt?: SortOrder
+    changedBy?: SortOrderInput | SortOrder
     _count?: SuggestionHistoryCountOrderByAggregateInput
     _max?: SuggestionHistoryMaxOrderByAggregateInput
     _min?: SuggestionHistoryMinOrderByAggregateInput
@@ -6459,6 +6623,7 @@ export namespace Prisma {
     suggestionId?: StringWithAggregatesFilter<"SuggestionHistory"> | string
     statusIde?: EnumStatusIdeWithAggregatesFilter<"SuggestionHistory"> | $Enums.StatusIde
     changedAt?: DateTimeWithAggregatesFilter<"SuggestionHistory"> | Date | string
+    changedBy?: StringNullableWithAggregatesFilter<"SuggestionHistory"> | string | null
   }
 
   export type FormPenilaianWhereInput = {
@@ -6541,6 +6706,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     suggestions?: SuggestionCreateNestedManyWithoutUserInput
+    suggestionHistory?: SuggestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -6556,6 +6722,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     suggestions?: SuggestionUncheckedCreateNestedManyWithoutUserInput
+    suggestionHistory?: SuggestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -6571,6 +6738,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     suggestions?: SuggestionUpdateManyWithoutUserNestedInput
+    suggestionHistory?: SuggestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -6586,6 +6754,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     suggestions?: SuggestionUncheckedUpdateManyWithoutUserNestedInput
+    suggestionHistory?: SuggestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -6644,6 +6813,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS
     sifatPerbaikan: $Enums.SifatPerbaikan
     statusIde?: $Enums.StatusIde
+    noRegistSS?: string | null
+    tanggalUsulan?: Date | string | null
+    hubungan?: string | null
+    tanggalEfektif?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutSuggestionsInput
@@ -6665,6 +6838,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS
     sifatPerbaikan: $Enums.SifatPerbaikan
     statusIde?: $Enums.StatusIde
+    noRegistSS?: string | null
+    tanggalUsulan?: Date | string | null
+    hubungan?: string | null
+    tanggalEfektif?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -6686,6 +6863,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFieldUpdateOperationsInput | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFieldUpdateOperationsInput | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    noRegistSS?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalUsulan?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hubungan?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalEfektif?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutSuggestionsNestedInput
@@ -6707,6 +6888,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFieldUpdateOperationsInput | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFieldUpdateOperationsInput | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    noRegistSS?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalUsulan?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hubungan?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalEfektif?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -6728,6 +6913,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS
     sifatPerbaikan: $Enums.SifatPerbaikan
     statusIde?: $Enums.StatusIde
+    noRegistSS?: string | null
+    tanggalUsulan?: Date | string | null
+    hubungan?: string | null
+    tanggalEfektif?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -6747,6 +6936,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFieldUpdateOperationsInput | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFieldUpdateOperationsInput | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    noRegistSS?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalUsulan?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hubungan?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalEfektif?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -6765,6 +6958,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFieldUpdateOperationsInput | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFieldUpdateOperationsInput | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    noRegistSS?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalUsulan?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hubungan?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalEfektif?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -6775,6 +6972,7 @@ export namespace Prisma {
     statusIde: $Enums.StatusIde
     changedAt?: Date | string
     suggestion: SuggestionCreateNestedOneWithoutHistoryInput
+    user?: UserCreateNestedOneWithoutSuggestionHistoryInput
   }
 
   export type SuggestionHistoryUncheckedCreateInput = {
@@ -6782,6 +6980,7 @@ export namespace Prisma {
     suggestionId: string
     statusIde: $Enums.StatusIde
     changedAt?: Date | string
+    changedBy?: string | null
   }
 
   export type SuggestionHistoryUpdateInput = {
@@ -6789,6 +6988,7 @@ export namespace Prisma {
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     suggestion?: SuggestionUpdateOneRequiredWithoutHistoryNestedInput
+    user?: UserUpdateOneWithoutSuggestionHistoryNestedInput
   }
 
   export type SuggestionHistoryUncheckedUpdateInput = {
@@ -6796,6 +6996,7 @@ export namespace Prisma {
     suggestionId?: StringFieldUpdateOperationsInput | string
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    changedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SuggestionHistoryCreateManyInput = {
@@ -6803,6 +7004,7 @@ export namespace Prisma {
     suggestionId: string
     statusIde: $Enums.StatusIde
     changedAt?: Date | string
+    changedBy?: string | null
   }
 
   export type SuggestionHistoryUpdateManyMutationInput = {
@@ -6816,6 +7018,7 @@ export namespace Prisma {
     suggestionId?: StringFieldUpdateOperationsInput | string
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    changedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FormPenilaianCreateInput = {
@@ -6958,7 +7161,17 @@ export namespace Prisma {
     none?: SuggestionWhereInput
   }
 
+  export type SuggestionHistoryListRelationFilter = {
+    every?: SuggestionHistoryWhereInput
+    some?: SuggestionHistoryWhereInput
+    none?: SuggestionHistoryWhereInput
+  }
+
   export type SuggestionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SuggestionHistoryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -7136,15 +7349,20 @@ export namespace Prisma {
     not?: NestedEnumStatusIdeFilter<$PrismaModel> | $Enums.StatusIde
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
-  }
-
-  export type SuggestionHistoryListRelationFilter = {
-    every?: SuggestionHistoryWhereInput
-    some?: SuggestionHistoryWhereInput
-    none?: SuggestionHistoryWhereInput
   }
 
   export type FormPenilaianListRelationFilter = {
@@ -7156,10 +7374,6 @@ export namespace Prisma {
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
-  }
-
-  export type SuggestionHistoryOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type FormPenilaianOrderByRelationAggregateInput = {
@@ -7180,6 +7394,10 @@ export namespace Prisma {
     kriteriaSS?: SortOrder
     sifatPerbaikan?: SortOrder
     statusIde?: SortOrder
+    noRegistSS?: SortOrder
+    tanggalUsulan?: SortOrder
+    hubungan?: SortOrder
+    tanggalEfektif?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -7199,6 +7417,10 @@ export namespace Prisma {
     kriteriaSS?: SortOrder
     sifatPerbaikan?: SortOrder
     statusIde?: SortOrder
+    noRegistSS?: SortOrder
+    tanggalUsulan?: SortOrder
+    hubungan?: SortOrder
+    tanggalEfektif?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -7218,6 +7440,10 @@ export namespace Prisma {
     kriteriaSS?: SortOrder
     sifatPerbaikan?: SortOrder
     statusIde?: SortOrder
+    noRegistSS?: SortOrder
+    tanggalUsulan?: SortOrder
+    hubungan?: SortOrder
+    tanggalEfektif?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -7271,9 +7497,28 @@ export namespace Prisma {
     _max?: NestedEnumStatusIdeFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type SuggestionScalarRelationFilter = {
     is?: SuggestionWhereInput
     isNot?: SuggestionWhereInput
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
   }
 
   export type SuggestionHistoryCountOrderByAggregateInput = {
@@ -7281,6 +7526,7 @@ export namespace Prisma {
     suggestionId?: SortOrder
     statusIde?: SortOrder
     changedAt?: SortOrder
+    changedBy?: SortOrder
   }
 
   export type SuggestionHistoryMaxOrderByAggregateInput = {
@@ -7288,6 +7534,7 @@ export namespace Prisma {
     suggestionId?: SortOrder
     statusIde?: SortOrder
     changedAt?: SortOrder
+    changedBy?: SortOrder
   }
 
   export type SuggestionHistoryMinOrderByAggregateInput = {
@@ -7295,6 +7542,7 @@ export namespace Prisma {
     suggestionId?: SortOrder
     statusIde?: SortOrder
     changedAt?: SortOrder
+    changedBy?: SortOrder
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -7369,11 +7617,25 @@ export namespace Prisma {
     connect?: SuggestionWhereUniqueInput | SuggestionWhereUniqueInput[]
   }
 
+  export type SuggestionHistoryCreateNestedManyWithoutUserInput = {
+    create?: XOR<SuggestionHistoryCreateWithoutUserInput, SuggestionHistoryUncheckedCreateWithoutUserInput> | SuggestionHistoryCreateWithoutUserInput[] | SuggestionHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SuggestionHistoryCreateOrConnectWithoutUserInput | SuggestionHistoryCreateOrConnectWithoutUserInput[]
+    createMany?: SuggestionHistoryCreateManyUserInputEnvelope
+    connect?: SuggestionHistoryWhereUniqueInput | SuggestionHistoryWhereUniqueInput[]
+  }
+
   export type SuggestionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<SuggestionCreateWithoutUserInput, SuggestionUncheckedCreateWithoutUserInput> | SuggestionCreateWithoutUserInput[] | SuggestionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SuggestionCreateOrConnectWithoutUserInput | SuggestionCreateOrConnectWithoutUserInput[]
     createMany?: SuggestionCreateManyUserInputEnvelope
     connect?: SuggestionWhereUniqueInput | SuggestionWhereUniqueInput[]
+  }
+
+  export type SuggestionHistoryUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<SuggestionHistoryCreateWithoutUserInput, SuggestionHistoryUncheckedCreateWithoutUserInput> | SuggestionHistoryCreateWithoutUserInput[] | SuggestionHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SuggestionHistoryCreateOrConnectWithoutUserInput | SuggestionHistoryCreateOrConnectWithoutUserInput[]
+    createMany?: SuggestionHistoryCreateManyUserInputEnvelope
+    connect?: SuggestionHistoryWhereUniqueInput | SuggestionHistoryWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -7422,6 +7684,20 @@ export namespace Prisma {
     deleteMany?: SuggestionScalarWhereInput | SuggestionScalarWhereInput[]
   }
 
+  export type SuggestionHistoryUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SuggestionHistoryCreateWithoutUserInput, SuggestionHistoryUncheckedCreateWithoutUserInput> | SuggestionHistoryCreateWithoutUserInput[] | SuggestionHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SuggestionHistoryCreateOrConnectWithoutUserInput | SuggestionHistoryCreateOrConnectWithoutUserInput[]
+    upsert?: SuggestionHistoryUpsertWithWhereUniqueWithoutUserInput | SuggestionHistoryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SuggestionHistoryCreateManyUserInputEnvelope
+    set?: SuggestionHistoryWhereUniqueInput | SuggestionHistoryWhereUniqueInput[]
+    disconnect?: SuggestionHistoryWhereUniqueInput | SuggestionHistoryWhereUniqueInput[]
+    delete?: SuggestionHistoryWhereUniqueInput | SuggestionHistoryWhereUniqueInput[]
+    connect?: SuggestionHistoryWhereUniqueInput | SuggestionHistoryWhereUniqueInput[]
+    update?: SuggestionHistoryUpdateWithWhereUniqueWithoutUserInput | SuggestionHistoryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SuggestionHistoryUpdateManyWithWhereWithoutUserInput | SuggestionHistoryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SuggestionHistoryScalarWhereInput | SuggestionHistoryScalarWhereInput[]
+  }
+
   export type SuggestionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SuggestionCreateWithoutUserInput, SuggestionUncheckedCreateWithoutUserInput> | SuggestionCreateWithoutUserInput[] | SuggestionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SuggestionCreateOrConnectWithoutUserInput | SuggestionCreateOrConnectWithoutUserInput[]
@@ -7434,6 +7710,20 @@ export namespace Prisma {
     update?: SuggestionUpdateWithWhereUniqueWithoutUserInput | SuggestionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SuggestionUpdateManyWithWhereWithoutUserInput | SuggestionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SuggestionScalarWhereInput | SuggestionScalarWhereInput[]
+  }
+
+  export type SuggestionHistoryUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SuggestionHistoryCreateWithoutUserInput, SuggestionHistoryUncheckedCreateWithoutUserInput> | SuggestionHistoryCreateWithoutUserInput[] | SuggestionHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SuggestionHistoryCreateOrConnectWithoutUserInput | SuggestionHistoryCreateOrConnectWithoutUserInput[]
+    upsert?: SuggestionHistoryUpsertWithWhereUniqueWithoutUserInput | SuggestionHistoryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SuggestionHistoryCreateManyUserInputEnvelope
+    set?: SuggestionHistoryWhereUniqueInput | SuggestionHistoryWhereUniqueInput[]
+    disconnect?: SuggestionHistoryWhereUniqueInput | SuggestionHistoryWhereUniqueInput[]
+    delete?: SuggestionHistoryWhereUniqueInput | SuggestionHistoryWhereUniqueInput[]
+    connect?: SuggestionHistoryWhereUniqueInput | SuggestionHistoryWhereUniqueInput[]
+    update?: SuggestionHistoryUpdateWithWhereUniqueWithoutUserInput | SuggestionHistoryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SuggestionHistoryUpdateManyWithWhereWithoutUserInput | SuggestionHistoryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SuggestionHistoryScalarWhereInput | SuggestionHistoryScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSuggestionsInput = {
@@ -7484,6 +7774,10 @@ export namespace Prisma {
 
   export type EnumStatusIdeFieldUpdateOperationsInput = {
     set?: $Enums.StatusIde
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type UserUpdateOneRequiredWithoutSuggestionsNestedInput = {
@@ -7556,12 +7850,28 @@ export namespace Prisma {
     connect?: SuggestionWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutSuggestionHistoryInput = {
+    create?: XOR<UserCreateWithoutSuggestionHistoryInput, UserUncheckedCreateWithoutSuggestionHistoryInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSuggestionHistoryInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type SuggestionUpdateOneRequiredWithoutHistoryNestedInput = {
     create?: XOR<SuggestionCreateWithoutHistoryInput, SuggestionUncheckedCreateWithoutHistoryInput>
     connectOrCreate?: SuggestionCreateOrConnectWithoutHistoryInput
     upsert?: SuggestionUpsertWithoutHistoryInput
     connect?: SuggestionWhereUniqueInput
     update?: XOR<XOR<SuggestionUpdateToOneWithWhereWithoutHistoryInput, SuggestionUpdateWithoutHistoryInput>, SuggestionUncheckedUpdateWithoutHistoryInput>
+  }
+
+  export type UserUpdateOneWithoutSuggestionHistoryNestedInput = {
+    create?: XOR<UserCreateWithoutSuggestionHistoryInput, UserUncheckedCreateWithoutSuggestionHistoryInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSuggestionHistoryInput
+    upsert?: UserUpsertWithoutSuggestionHistoryInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSuggestionHistoryInput, UserUpdateWithoutSuggestionHistoryInput>, UserUncheckedUpdateWithoutSuggestionHistoryInput>
   }
 
   export type SuggestionCreateNestedOneWithoutPenilaianInput = {
@@ -7794,6 +8104,17 @@ export namespace Prisma {
     not?: NestedEnumStatusIdeFilter<$PrismaModel> | $Enums.StatusIde
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -7852,6 +8173,20 @@ export namespace Prisma {
     _max?: NestedEnumStatusIdeFilter<$PrismaModel>
   }
 
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -7882,6 +8217,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS
     sifatPerbaikan: $Enums.SifatPerbaikan
     statusIde?: $Enums.StatusIde
+    noRegistSS?: string | null
+    tanggalUsulan?: Date | string | null
+    hubungan?: string | null
+    tanggalEfektif?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     history?: SuggestionHistoryCreateNestedManyWithoutSuggestionInput
@@ -7902,6 +8241,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS
     sifatPerbaikan: $Enums.SifatPerbaikan
     statusIde?: $Enums.StatusIde
+    noRegistSS?: string | null
+    tanggalUsulan?: Date | string | null
+    hubungan?: string | null
+    tanggalEfektif?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     history?: SuggestionHistoryUncheckedCreateNestedManyWithoutSuggestionInput
@@ -7915,6 +8258,30 @@ export namespace Prisma {
 
   export type SuggestionCreateManyUserInputEnvelope = {
     data: SuggestionCreateManyUserInput | SuggestionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SuggestionHistoryCreateWithoutUserInput = {
+    id?: string
+    statusIde: $Enums.StatusIde
+    changedAt?: Date | string
+    suggestion: SuggestionCreateNestedOneWithoutHistoryInput
+  }
+
+  export type SuggestionHistoryUncheckedCreateWithoutUserInput = {
+    id?: string
+    suggestionId: string
+    statusIde: $Enums.StatusIde
+    changedAt?: Date | string
+  }
+
+  export type SuggestionHistoryCreateOrConnectWithoutUserInput = {
+    where: SuggestionHistoryWhereUniqueInput
+    create: XOR<SuggestionHistoryCreateWithoutUserInput, SuggestionHistoryUncheckedCreateWithoutUserInput>
+  }
+
+  export type SuggestionHistoryCreateManyUserInputEnvelope = {
+    data: SuggestionHistoryCreateManyUserInput | SuggestionHistoryCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -7951,9 +8318,40 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFilter<"Suggestion"> | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFilter<"Suggestion"> | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFilter<"Suggestion"> | $Enums.StatusIde
+    noRegistSS?: StringNullableFilter<"Suggestion"> | string | null
+    tanggalUsulan?: DateTimeNullableFilter<"Suggestion"> | Date | string | null
+    hubungan?: StringNullableFilter<"Suggestion"> | string | null
+    tanggalEfektif?: DateTimeNullableFilter<"Suggestion"> | Date | string | null
     createdAt?: DateTimeFilter<"Suggestion"> | Date | string
     updatedAt?: DateTimeFilter<"Suggestion"> | Date | string
     userId?: StringFilter<"Suggestion"> | string
+  }
+
+  export type SuggestionHistoryUpsertWithWhereUniqueWithoutUserInput = {
+    where: SuggestionHistoryWhereUniqueInput
+    update: XOR<SuggestionHistoryUpdateWithoutUserInput, SuggestionHistoryUncheckedUpdateWithoutUserInput>
+    create: XOR<SuggestionHistoryCreateWithoutUserInput, SuggestionHistoryUncheckedCreateWithoutUserInput>
+  }
+
+  export type SuggestionHistoryUpdateWithWhereUniqueWithoutUserInput = {
+    where: SuggestionHistoryWhereUniqueInput
+    data: XOR<SuggestionHistoryUpdateWithoutUserInput, SuggestionHistoryUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SuggestionHistoryUpdateManyWithWhereWithoutUserInput = {
+    where: SuggestionHistoryScalarWhereInput
+    data: XOR<SuggestionHistoryUpdateManyMutationInput, SuggestionHistoryUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type SuggestionHistoryScalarWhereInput = {
+    AND?: SuggestionHistoryScalarWhereInput | SuggestionHistoryScalarWhereInput[]
+    OR?: SuggestionHistoryScalarWhereInput[]
+    NOT?: SuggestionHistoryScalarWhereInput | SuggestionHistoryScalarWhereInput[]
+    id?: StringFilter<"SuggestionHistory"> | string
+    suggestionId?: StringFilter<"SuggestionHistory"> | string
+    statusIde?: EnumStatusIdeFilter<"SuggestionHistory"> | $Enums.StatusIde
+    changedAt?: DateTimeFilter<"SuggestionHistory"> | Date | string
+    changedBy?: StringNullableFilter<"SuggestionHistory"> | string | null
   }
 
   export type UserCreateWithoutSuggestionsInput = {
@@ -7968,6 +8366,7 @@ export namespace Prisma {
     password: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    suggestionHistory?: SuggestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSuggestionsInput = {
@@ -7982,6 +8381,7 @@ export namespace Prisma {
     password: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    suggestionHistory?: SuggestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSuggestionsInput = {
@@ -7993,12 +8393,14 @@ export namespace Prisma {
     id?: string
     statusIde: $Enums.StatusIde
     changedAt?: Date | string
+    user?: UserCreateNestedOneWithoutSuggestionHistoryInput
   }
 
   export type SuggestionHistoryUncheckedCreateWithoutSuggestionInput = {
     id?: string
     statusIde: $Enums.StatusIde
     changedAt?: Date | string
+    changedBy?: string | null
   }
 
   export type SuggestionHistoryCreateOrConnectWithoutSuggestionInput = {
@@ -8062,6 +8464,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    suggestionHistory?: SuggestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSuggestionsInput = {
@@ -8076,6 +8479,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    suggestionHistory?: SuggestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SuggestionHistoryUpsertWithWhereUniqueWithoutSuggestionInput = {
@@ -8092,16 +8496,6 @@ export namespace Prisma {
   export type SuggestionHistoryUpdateManyWithWhereWithoutSuggestionInput = {
     where: SuggestionHistoryScalarWhereInput
     data: XOR<SuggestionHistoryUpdateManyMutationInput, SuggestionHistoryUncheckedUpdateManyWithoutSuggestionInput>
-  }
-
-  export type SuggestionHistoryScalarWhereInput = {
-    AND?: SuggestionHistoryScalarWhereInput | SuggestionHistoryScalarWhereInput[]
-    OR?: SuggestionHistoryScalarWhereInput[]
-    NOT?: SuggestionHistoryScalarWhereInput | SuggestionHistoryScalarWhereInput[]
-    id?: StringFilter<"SuggestionHistory"> | string
-    suggestionId?: StringFilter<"SuggestionHistory"> | string
-    statusIde?: EnumStatusIdeFilter<"SuggestionHistory"> | $Enums.StatusIde
-    changedAt?: DateTimeFilter<"SuggestionHistory"> | Date | string
   }
 
   export type FormPenilaianUpsertWithWhereUniqueWithoutSuggestionInput = {
@@ -8147,6 +8541,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS
     sifatPerbaikan: $Enums.SifatPerbaikan
     statusIde?: $Enums.StatusIde
+    noRegistSS?: string | null
+    tanggalUsulan?: Date | string | null
+    hubungan?: string | null
+    tanggalEfektif?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutSuggestionsInput
@@ -8167,6 +8565,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS
     sifatPerbaikan: $Enums.SifatPerbaikan
     statusIde?: $Enums.StatusIde
+    noRegistSS?: string | null
+    tanggalUsulan?: Date | string | null
+    hubungan?: string | null
+    tanggalEfektif?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -8176,6 +8578,41 @@ export namespace Prisma {
   export type SuggestionCreateOrConnectWithoutHistoryInput = {
     where: SuggestionWhereUniqueInput
     create: XOR<SuggestionCreateWithoutHistoryInput, SuggestionUncheckedCreateWithoutHistoryInput>
+  }
+
+  export type UserCreateWithoutSuggestionHistoryInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    nrp: bigint | number
+    role: $Enums.Role
+    permissionLevel?: $Enums.PermissionLevel
+    department?: $Enums.Department
+    position?: $Enums.Position
+    password: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    suggestions?: SuggestionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSuggestionHistoryInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    nrp: bigint | number
+    role: $Enums.Role
+    permissionLevel?: $Enums.PermissionLevel
+    department?: $Enums.Department
+    position?: $Enums.Position
+    password: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    suggestions?: SuggestionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSuggestionHistoryInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSuggestionHistoryInput, UserUncheckedCreateWithoutSuggestionHistoryInput>
   }
 
   export type SuggestionUpsertWithoutHistoryInput = {
@@ -8203,6 +8640,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFieldUpdateOperationsInput | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFieldUpdateOperationsInput | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    noRegistSS?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalUsulan?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hubungan?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalEfektif?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutSuggestionsNestedInput
@@ -8223,10 +8664,55 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFieldUpdateOperationsInput | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFieldUpdateOperationsInput | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    noRegistSS?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalUsulan?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hubungan?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalEfektif?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     penilaian?: FormPenilaianUncheckedUpdateManyWithoutSuggestionNestedInput
+  }
+
+  export type UserUpsertWithoutSuggestionHistoryInput = {
+    update: XOR<UserUpdateWithoutSuggestionHistoryInput, UserUncheckedUpdateWithoutSuggestionHistoryInput>
+    create: XOR<UserCreateWithoutSuggestionHistoryInput, UserUncheckedCreateWithoutSuggestionHistoryInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSuggestionHistoryInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSuggestionHistoryInput, UserUncheckedUpdateWithoutSuggestionHistoryInput>
+  }
+
+  export type UserUpdateWithoutSuggestionHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    nrp?: BigIntFieldUpdateOperationsInput | bigint | number
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    permissionLevel?: EnumPermissionLevelFieldUpdateOperationsInput | $Enums.PermissionLevel
+    department?: EnumDepartmentFieldUpdateOperationsInput | $Enums.Department
+    position?: EnumPositionFieldUpdateOperationsInput | $Enums.Position
+    password?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    suggestions?: SuggestionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSuggestionHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    nrp?: BigIntFieldUpdateOperationsInput | bigint | number
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    permissionLevel?: EnumPermissionLevelFieldUpdateOperationsInput | $Enums.PermissionLevel
+    department?: EnumDepartmentFieldUpdateOperationsInput | $Enums.Department
+    position?: EnumPositionFieldUpdateOperationsInput | $Enums.Position
+    password?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    suggestions?: SuggestionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SuggestionCreateWithoutPenilaianInput = {
@@ -8243,6 +8729,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS
     sifatPerbaikan: $Enums.SifatPerbaikan
     statusIde?: $Enums.StatusIde
+    noRegistSS?: string | null
+    tanggalUsulan?: Date | string | null
+    hubungan?: string | null
+    tanggalEfektif?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutSuggestionsInput
@@ -8263,6 +8753,10 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS
     sifatPerbaikan: $Enums.SifatPerbaikan
     statusIde?: $Enums.StatusIde
+    noRegistSS?: string | null
+    tanggalUsulan?: Date | string | null
+    hubungan?: string | null
+    tanggalEfektif?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -8299,6 +8793,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFieldUpdateOperationsInput | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFieldUpdateOperationsInput | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    noRegistSS?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalUsulan?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hubungan?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalEfektif?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutSuggestionsNestedInput
@@ -8319,6 +8817,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFieldUpdateOperationsInput | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFieldUpdateOperationsInput | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    noRegistSS?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalUsulan?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hubungan?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalEfektif?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -8339,8 +8841,19 @@ export namespace Prisma {
     kriteriaSS: $Enums.KriteriaSS
     sifatPerbaikan: $Enums.SifatPerbaikan
     statusIde?: $Enums.StatusIde
+    noRegistSS?: string | null
+    tanggalUsulan?: Date | string | null
+    hubungan?: string | null
+    tanggalEfektif?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type SuggestionHistoryCreateManyUserInput = {
+    id?: string
+    suggestionId: string
+    statusIde: $Enums.StatusIde
+    changedAt?: Date | string
   }
 
   export type SuggestionUpdateWithoutUserInput = {
@@ -8357,6 +8870,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFieldUpdateOperationsInput | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFieldUpdateOperationsInput | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    noRegistSS?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalUsulan?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hubungan?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalEfektif?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     history?: SuggestionHistoryUpdateManyWithoutSuggestionNestedInput
@@ -8377,6 +8894,10 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFieldUpdateOperationsInput | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFieldUpdateOperationsInput | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    noRegistSS?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalUsulan?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hubungan?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalEfektif?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     history?: SuggestionHistoryUncheckedUpdateManyWithoutSuggestionNestedInput
@@ -8397,14 +8918,40 @@ export namespace Prisma {
     kriteriaSS?: EnumKriteriaSSFieldUpdateOperationsInput | $Enums.KriteriaSS
     sifatPerbaikan?: EnumSifatPerbaikanFieldUpdateOperationsInput | $Enums.SifatPerbaikan
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    noRegistSS?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalUsulan?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hubungan?: NullableStringFieldUpdateOperationsInput | string | null
+    tanggalEfektif?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SuggestionHistoryUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    suggestion?: SuggestionUpdateOneRequiredWithoutHistoryNestedInput
+  }
+
+  export type SuggestionHistoryUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    suggestionId?: StringFieldUpdateOperationsInput | string
+    statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SuggestionHistoryUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    suggestionId?: StringFieldUpdateOperationsInput | string
+    statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SuggestionHistoryCreateManySuggestionInput = {
     id?: string
     statusIde: $Enums.StatusIde
     changedAt?: Date | string
+    changedBy?: string | null
   }
 
   export type FormPenilaianCreateManySuggestionInput = {
@@ -8420,18 +8967,21 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutSuggestionHistoryNestedInput
   }
 
   export type SuggestionHistoryUncheckedUpdateWithoutSuggestionInput = {
     id?: StringFieldUpdateOperationsInput | string
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    changedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SuggestionHistoryUncheckedUpdateManyWithoutSuggestionInput = {
     id?: StringFieldUpdateOperationsInput | string
     statusIde?: EnumStatusIdeFieldUpdateOperationsInput | $Enums.StatusIde
     changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    changedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FormPenilaianUpdateWithoutSuggestionInput = {
