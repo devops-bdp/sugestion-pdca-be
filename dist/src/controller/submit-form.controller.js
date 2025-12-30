@@ -112,8 +112,18 @@ class SubmitFormController {
             const userRole = req.user?.role;
             const userPermissionLevel = req.user?.permissionLevel;
             const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
+            let statusFilter = undefined;
+            if (statusIde) {
+                const statusArray = statusIde.split(',').map(s => s.trim());
+                if (statusArray.length === 1) {
+                    statusFilter = statusArray[0];
+                }
+                else if (statusArray.length > 1) {
+                    statusFilter = { in: statusArray };
+                }
+            }
             const whereCondition = {
-                ...(statusIde && { statusIde: statusIde }),
+                ...(statusFilter && { statusIde: statusFilter }),
                 ...(userId && { userId: userId }),
                 ...(kriteriaSS && { kriteriaSS: kriteriaSS }),
             };
@@ -205,17 +215,18 @@ class SubmitFormController {
             });
             const suggestions = allSuggestions.filter((s) => {
                 if (s.noRegistSS) {
-                    return s.noRegistSS.includes(`/${monthRoman}/${currentYear}`);
+                    const pattern = `/${monthRoman}/${currentYear}`;
+                    return s.noRegistSS.includes(pattern);
                 }
-                return true;
+                return false;
             });
             let maxIndex = 0;
             suggestions.forEach((s) => {
                 if (s.noRegistSS) {
                     const match = s.noRegistSS.match(/^(\d+)\//);
                     if (match) {
-                        const index = parseInt(match[1]);
-                        if (index > maxIndex) {
+                        const index = parseInt(match[1], 10);
+                        if (!isNaN(index) && index > maxIndex) {
                             maxIndex = index;
                         }
                     }

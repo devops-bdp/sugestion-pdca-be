@@ -149,8 +149,19 @@ export class SubmitFormController {
       const hasFullAccess = userRole === "Super_Admin" || userPermissionLevel === "FULL_ACCESS";
 
       // Build where condition with department filtering
+      // Handle multiple statusIde values (comma-separated)
+      let statusFilter: any = undefined;
+      if (statusIde) {
+        const statusArray = (statusIde as string).split(',').map(s => s.trim());
+        if (statusArray.length === 1) {
+          statusFilter = statusArray[0];
+        } else if (statusArray.length > 1) {
+          statusFilter = { in: statusArray };
+        }
+      }
+
       const whereCondition: any = {
-        ...(statusIde && { statusIde: statusIde as any }),
+        ...(statusFilter && { statusIde: statusFilter }),
         ...(userId && { userId: userId as string }),
         ...(kriteriaSS && { kriteriaSS: kriteriaSS as any }),
       };
