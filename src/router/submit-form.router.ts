@@ -170,6 +170,47 @@ export class SubmitFormRouter {
 
     /**
      * @swagger
+     * /api/suggestions/next-regist-number:
+     *   get:
+     *     summary: Get next registration number (global, sequential across all users)
+     *     tags: [Suggestions]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Next registration number
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     nextRegistNumber:
+     *                       type: string
+     *                       example: "02/SS-PDCA/XII/2025"
+     *                     currentMonth:
+     *                       type: integer
+     *                     currentYear:
+     *                       type: integer
+     *                     monthRoman:
+     *                       type: string
+     *       500:
+     *         description: Internal server error
+     */
+    this.router.get(
+      "/next-regist-number",
+      verifyUser,
+      this.submitFormController.getNextRegistNumber.bind(
+        this.submitFormController
+      )
+    );
+
+    /**
+     * @swagger
      * /api/suggestions/penilaian:
      *   post:
      *     summary: Submit scoring/evaluation for a suggestion

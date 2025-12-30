@@ -182,6 +182,68 @@ class SubmitFormController {
             });
         }
     }
+    async getNextRegistNumber(req, res) {
+        try {
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+            const romanNumerals = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+            const monthRoman = romanNumerals[currentMonth] || '';
+            const currentMonthStart = new Date(currentYear, currentMonth - 1, 1);
+            const currentMonthEnd = new Date(currentYear, currentMonth, 0, 23, 59, 59, 999);
+            const suggestions = await prisma.suggestion.findMany({
+                where: {
+                    OR: [
+                        {
+                            noRegistSS: {
+                                contains: `/${monthRoman}/${currentYear}`,
+                            },
+                        },
+                        {
+                            createdAt: {
+                                gte: currentMonthStart,
+                                lte: currentMonthEnd,
+                            },
+                        },
+                    ],
+                },
+                select: {
+                    noRegistSS: true,
+                },
+            });
+            let maxIndex = 0;
+            suggestions.forEach((s) => {
+                if (s.noRegistSS) {
+                    const match = s.noRegistSS.match(/^(\d+)\//);
+                    if (match) {
+                        const index = parseInt(match[1]);
+                        if (index > maxIndex) {
+                            maxIndex = index;
+                        }
+                    }
+                }
+            });
+            const nextIndex = String(maxIndex + 1).padStart(2, '0');
+            const nextRegistNumber = `${nextIndex}/SS-PDCA/${monthRoman}/${currentYear}`;
+            return res.status(200).json({
+                success: true,
+                data: {
+                    nextRegistNumber,
+                    currentMonth,
+                    currentYear,
+                    monthRoman,
+                },
+            });
+        }
+        catch (error) {
+            console.error("Error getting next registration number:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to get next registration number",
+                error: error instanceof Error ? error.message : "Unknown error",
+            });
+        }
+    }
     async getSuggestionById(req, res) {
         try {
             const { id } = req.params;

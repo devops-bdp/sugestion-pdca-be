@@ -224,6 +224,83 @@ export class SubmitFormController {
     }
   }
 
+  // Get next registration number (global, not per user)
+  async getNextRegistNumber(req: Request, res: Response) {
+    try {
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1; // 1-12
+      const currentYear = now.getFullYear();
+      
+      // Convert month to Roman numeral
+      const romanNumerals = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+      const monthRoman = romanNumerals[currentMonth] || '';
+      
+      // Get ALL suggestions from current month and year (GLOBAL, no user/department filter)
+      // This ensures sequential numbering across all users
+      const currentMonthStart = new Date(currentYear, currentMonth - 1, 1);
+      const currentMonthEnd = new Date(currentYear, currentMonth, 0, 23, 59, 59, 999);
+      
+      // Get all suggestions from current month/year - GLOBAL, no filters
+      const allSuggestions = await prisma.suggestion.findMany({
+        where: {
+          createdAt: {
+            gte: currentMonthStart,
+            lte: currentMonthEnd,
+          },
+        },
+        select: {
+          noRegistSS: true,
+          createdAt: true,
+        },
+      });
+      
+      // Filter by noRegistSS pattern to ensure we only count suggestions with matching month/year
+      const suggestions = allSuggestions.filter((s) => {
+        if (s.noRegistSS) {
+          // Check if noRegistSS matches current month/year pattern
+          return s.noRegistSS.includes(`/${monthRoman}/${currentYear}`);
+        }
+        // If no noRegistSS, use createdAt as fallback
+        return true;
+      });
+      
+      // Find the highest index number
+      let maxIndex = 0;
+      suggestions.forEach((s) => {
+        if (s.noRegistSS) {
+          const match = s.noRegistSS.match(/^(\d+)\//);
+          if (match) {
+            const index = parseInt(match[1]);
+            if (index > maxIndex) {
+              maxIndex = index;
+            }
+          }
+        }
+      });
+      
+      // Generate next index (pad with zero)
+      const nextIndex = String(maxIndex + 1).padStart(2, '0');
+      const nextRegistNumber = `${nextIndex}/SS-PDCA/${monthRoman}/${currentYear}`;
+      
+      return res.status(200).json({
+        success: true,
+        data: {
+          nextRegistNumber,
+          currentMonth,
+          currentYear,
+          monthRoman,
+        },
+      });
+    } catch (error) {
+      console.error("Error getting next registration number:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to get next registration number",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+
   // Get single suggestion by ID
   async getSuggestionById(req: Request, res: Response) {
     try {
