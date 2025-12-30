@@ -255,23 +255,26 @@ export class SubmitFormController {
       });
       
       // Filter by noRegistSS pattern to ensure we only count suggestions with matching month/year
+      // Only count suggestions that have noRegistSS with matching month/year pattern
       const suggestions = allSuggestions.filter((s) => {
         if (s.noRegistSS) {
           // Check if noRegistSS matches current month/year pattern
-          return s.noRegistSS.includes(`/${monthRoman}/${currentYear}`);
+          const pattern = `/${monthRoman}/${currentYear}`;
+          return s.noRegistSS.includes(pattern);
         }
-        // If no noRegistSS, use createdAt as fallback
-        return true;
+        // If no noRegistSS, don't count it (it's not a valid registered suggestion)
+        return false;
       });
       
-      // Find the highest index number
+      // Find the highest index number from suggestions with valid noRegistSS
       let maxIndex = 0;
       suggestions.forEach((s) => {
         if (s.noRegistSS) {
+          // Extract index from format: "01/SS-PDCA/XII/2025"
           const match = s.noRegistSS.match(/^(\d+)\//);
           if (match) {
-            const index = parseInt(match[1]);
-            if (index > maxIndex) {
+            const index = parseInt(match[1], 10);
+            if (!isNaN(index) && index > maxIndex) {
               maxIndex = index;
             }
           }
