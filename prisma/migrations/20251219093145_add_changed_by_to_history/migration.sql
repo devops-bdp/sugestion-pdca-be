@@ -8,3 +8,4 @@ ALTER TABLE "SuggestionHistory" ADD CONSTRAINT "SuggestionHistory_changedBy_fkey
 
 
 
+
