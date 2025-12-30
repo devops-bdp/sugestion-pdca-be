@@ -191,25 +191,23 @@ class SubmitFormController {
             const monthRoman = romanNumerals[currentMonth] || '';
             const currentMonthStart = new Date(currentYear, currentMonth - 1, 1);
             const currentMonthEnd = new Date(currentYear, currentMonth, 0, 23, 59, 59, 999);
-            const suggestions = await prisma.suggestion.findMany({
+            const allSuggestions = await prisma.suggestion.findMany({
                 where: {
-                    OR: [
-                        {
-                            noRegistSS: {
-                                contains: `/${monthRoman}/${currentYear}`,
-                            },
-                        },
-                        {
-                            createdAt: {
-                                gte: currentMonthStart,
-                                lte: currentMonthEnd,
-                            },
-                        },
-                    ],
+                    createdAt: {
+                        gte: currentMonthStart,
+                        lte: currentMonthEnd,
+                    },
                 },
                 select: {
                     noRegistSS: true,
+                    createdAt: true,
                 },
+            });
+            const suggestions = allSuggestions.filter((s) => {
+                if (s.noRegistSS) {
+                    return s.noRegistSS.includes(`/${monthRoman}/${currentYear}`);
+                }
+                return true;
             });
             let maxIndex = 0;
             suggestions.forEach((s) => {
